@@ -1,0 +1,15 @@
+[package]
+name = "music-things"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.83"
+description = "Facade crate re-exporting the music-things synth and effect DSP crates"
+license = "MIT"
+homepage = "https://github.com/tacogips/music-things"
+repository = "https://github.com/tacogips/music-things"
+readme = "../../README.md"
+
+[dependencies]
+
+[lib]
+path = "src/lib.rs"
