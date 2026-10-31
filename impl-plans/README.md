@@ -39,7 +39,16 @@ Large features are split into multiple related plans with cross-references.
 
 | Plan | Status | Design Reference | Last Updated |
 |------|--------|------------------|--------------|
-| (No active plans yet) | - | - | - |
+| [behringer-oss-ports-00-scaffold](active/behringer-oss-ports-00-scaffold.md) (bop-00, W1) | Ready | design-docs/specs/design-behringer-oss-ports.md | 2026-10-31 |
+| [behringer-oss-ports-01-airwindows-framework](active/behringer-oss-ports-01-airwindows-framework.md) (bop-01, W2) | Ready | design-docs/specs/design-behringer-oss-ports.md#a-airwindows-cratesairwindows | 2026-10-31 |
+| behringer-oss-ports-02..15-aw-b1-g01..g14 (bop-02..bop-15, W3; one plan per 8 kick-list lines) | Ready | design-docs/specs/design-behringer-oss-ports.md#batch-1-grouping-fixed-by-line-of-kick-airwindows-settxt | 2026-10-31 |
+| [behringer-oss-ports-16a-soundfont-midi](active/behringer-oss-ports-16a-soundfont-midi.md) (bop-16a, W2) | Ready | design-docs/specs/design-behringer-oss-ports.md#b-soundfont-cratessoundfont | 2026-10-31 |
+| [behringer-oss-ports-16b-soundfont-font](active/behringer-oss-ports-16b-soundfont-font.md) (bop-16b, W2) | Ready | design-docs/specs/design-behringer-oss-ports.md#b-soundfont-cratessoundfont | 2026-10-31 |
+| [behringer-oss-ports-16c-soundfont-synth](active/behringer-oss-ports-16c-soundfont-synth.md) (bop-16c, W3) | Ready | design-docs/specs/design-behringer-oss-ports.md#b-soundfont-cratessoundfont | 2026-10-31 |
+| [behringer-oss-ports-17a-pitch-smb](active/behringer-oss-ports-17a-pitch-smb.md) (bop-17a, W2) | Ready | design-docs/specs/design-behringer-oss-ports.md#c-pitch-cratespitch | 2026-10-31 |
+| [behringer-oss-ports-17b-pitch-stft](active/behringer-oss-ports-17b-pitch-stft.md) (bop-17b, W2) | Ready | design-docs/specs/design-behringer-oss-ports.md#c-pitch-cratespitch | 2026-10-31 |
+| [behringer-oss-ports-17c-pitch-dywa](active/behringer-oss-ports-17c-pitch-dywa.md) (bop-17c, W2) | Ready | design-docs/specs/design-behringer-oss-ports.md#c-pitch-cratespitch | 2026-10-31 |
+| [behringer-oss-ports-18-integration](active/behringer-oss-ports-18-integration.md) (bop-18, W4) | Ready | design-docs/specs/design-behringer-oss-ports.md#d-facade-cratesmusic-things | 2026-10-31 |
 
 ## Completed Plans
 
