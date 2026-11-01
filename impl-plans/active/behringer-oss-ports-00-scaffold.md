@@ -193,3 +193,19 @@ Concrete repository-relative paths (no globs). A directory entry owns every file
 | `git diff --quiet Cargo.toml` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/root-manifest.log` |
 
 **Notes**: Initial build before Rust files existed failed; see `logs/build-before-rust.log`. The final build passed. Reference checksums are in `logs/stimulus.log`.
+
+### Session: 2026-11-01 — checkpoint verification
+**Tasks Completed**: Verified the existing D1–D4 contracts at checkpoint `cc94ddc`; downstream implementations were preserved. Formal review and finalization remain downstream. All commands exited 0; non-test commands ran 0 tests.
+
+| Command | Tests run/passed | Log |
+|---|---:|---|
+| `clang -std=c99 -O1 -ffp-contract=off -fno-fast-math -fno-builtin -o tmp/behringer-oss-ports/bop-00/stimulus_check tools/common/stimulus_check.c && tmp/behringer-oss-ports/bop-00/stimulus_check` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/rerun-20261101/stimulus.log` |
+| `CARGO_TERM_QUIET=true cargo build --workspace` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/rerun-20261101/build.log` |
+| `git diff --stat Cargo.lock` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/rerun-20261101/lock-stat.log` |
+| `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows -p music-things-soundfont -p music-things-pitch` | 149/149 (3 skipped) | `tmp/behringer-oss-ports/bop-00/logs/rerun-20261101/nextest.log` |
+| `CARGO_TERM_QUIET=true cargo build --workspace --target wasm32-unknown-unknown` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/rerun-20261101/wasm.log` |
+| `CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows -p music-things-soundfont -p music-things-pitch --all-targets -- -D warnings` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/rerun-20261101/clippy.log` |
+| `find crates/airwindows crates/soundfont crates/pitch -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/rerun-20261101/rustfmt.log` |
+| `git diff --quiet Cargo.toml` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/rerun-20261101/root-manifest.log` |
+
+**Notes**: The C checksums are `d83a50634fc97283`, `9079f3b5302ec7f0`, and `4ed50bb4be37bb1a`, matching the Rust tests. Earlier integration findings were assigned to other plans, not bop-00.

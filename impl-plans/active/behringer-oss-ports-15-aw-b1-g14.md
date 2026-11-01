@@ -161,3 +161,13 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 **Tasks Completed**: Ported and registered Ditherbox's FLOAT processing modes. Initialized upstream's uninitialized `flip` to false, recorded the divergence, and verified parameter-preserving reset. The committed Ditherbox fixture matches exactly, with measured max-abs `0.0`.
 **Verification**: With `CARGO_TARGET_DIR=target/bop-15-direct` and quiet Cargo/nextest settings, parity (6 tests), catalog and no-alloc (4 tests), Clippy, rustfmt on the touched Rust files, and the wasm32 build all exited 0.
 **Remaining**: The other plugins' provisional measurements and broader plan completion remain outside this session's scope.
+
+## Operator resume note (2026-11-01)
+
+The port that blocked this plan in session 578 waves 5 and 6 was completed by a
+direct gpt-6.1-terra pass and committed at 49052ec (fixture parity exact,
+measured max-abs 0.0; group parity, catalog/no_alloc, clippy -D warnings,
+rustfmt and wasm32 all exit 0). Re-verify the plugin against the plan and the
+pinned upstream source, fix anything a review finds, and re-run every gate
+with fresh logs. Sibling plans are committed dependencies (see the manifest's
+acceptedDependencies), so the shared crate is stable.

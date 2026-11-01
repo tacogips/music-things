@@ -154,3 +154,13 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 ### Session: 2026-11-01 (BigAmp completion)
 **Progress**: Completed and registered the BigAmp float port, including parameter-preserving reset and upstream seed replay. BigAmp is Libm with measured max-abs 0.0 across the existing fixture renders.
 **Verification**: With `CARGO_TARGET_DIR=target/bop-04-direct`, group parity (8 tests), catalog and no-allocation (4 tests), Clippy, rustfmt on the touched Rust files, and the wasm32 build all exited 0.
+
+## Operator resume note (2026-11-01)
+
+The port that blocked this plan in session 578 waves 5 and 6 was completed by a
+direct gpt-6.1-terra pass and committed at 49052ec (fixture parity exact,
+measured max-abs 0.0; group parity, catalog/no_alloc, clippy -D warnings,
+rustfmt and wasm32 all exit 0). Re-verify the plugin against the plan and the
+pinned upstream source, fix anything a review finds, and re-run every gate
+with fresh logs. Sibling plans are committed dependencies (see the manifest's
+acceptedDependencies), so the shared crate is stable.
