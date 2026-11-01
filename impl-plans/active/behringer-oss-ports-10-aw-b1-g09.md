@@ -117,14 +117,38 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 
 ## Completion Criteria
 
-- [ ] All 8 plugins of lines 65-72 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-10/logs/`.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] All 8 plugins of lines 65-72 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-10/logs/`.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01
+**Tasks completed**: Drafted and registered Compresaturator, Console4Buss, Console4Channel, Console5Buss, Console5Channel, Console5DarkCh, Console6Buss, Console6Channel in list order. Their parity classes respectively are Libm, Exact, Exact, Libm, Libm, Libm, Exact, Exact. Measured max-abs is 0.0 for each across the three fixture renders (logs/measure.log; 8 passed).
+
+**Verification**: The earlier moving-tree parity run and catalog/no_alloc passed (8/8 and 4/4). After final source edits, parity, catalog/no_alloc, clippy and wasm each exited 101 before tests because sibling g02 and g12 registrations use static non-Copy entries. See `tmp/behringer-oss-ports/bop-10/logs/final-{parity,catalog,clippy,wasm}.log`. Final rustfmt and line-limit checks exited 0 (`logs/final-fmt.log`, `logs/final-lines.log`). Earlier clippy also identified sibling lint failures (`logs/check-clippy.log`); owned literal lints were corrected. Run the six exact verification commands above once sibling files compile. The prior passing parity measurement is not final-source verification.
+
+### Session: 2026-11-01, final-source recheck
+Corrected Console5Buss and Console5Channel copyright lines to the pinned upstream headers. The eight plugin names, classes and measured max-abs values are listed above. All commands used `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-10/target-check` on a moving shared tree. Logs below are under `tmp/behringer-oss-ports/bop-10/logs/`.
+
+- `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test parity_batch1_g09`: exit 0, 8 passed; `agent-final2-parity.log`.
+- `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test catalog --test no_alloc`: exit 0, 4 passed; `agent-final2-catalog.log`.
+- `CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings`: exit 101; sibling groups g01, g03, g11 and g14 have lint errors; `agent-final2-clippy.log`. Rerun after their owners repair them.
+- `find crates/airwindows/src/plugins/batch1/g09 crates/airwindows/tests/parity_batch1_g09.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check`: exit 0; `agent-final2-fmt.log`.
+- `CARGO_TERM_QUIET=true cargo build -p music-things-airwindows --target wasm32-unknown-unknown`: exit 0; `agent-final2-wasm.log`.
+- `test -z "$(find crates/airwindows/src/plugins/batch1/g09 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"`: exit 0; `agent-final2-lines.log`.
+
+### Continuation 1: Clippy recheck
+`CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-10/target-check CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101 on the moving shared tree. The 23 diagnostics are in sibling group g11 (`console8channelin.rs`, `console8subhype.rs`, `console8subin.rs`, `crystal.rs`, `cstrip.rs`); no g09 diagnostics. Full log: `tmp/behringer-oss-ports/bop-10/logs/continuation1-clippy.log`. The g11 owner must repair these before this gate can pass.
+
+### Continuation 2: verification recheck
+All six required commands exited 0 on the shared tree using `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-10/target-check`. Parity passed 8/8 and catalog/no_alloc passed 4/4. The outputs and exit statuses are recorded in `tmp/behringer-oss-ports/bop-10/logs/continuation2-{parity,catalog,clippy,fmt,wasm,lines}.log`; command definitions are the six verification commands above with the stated target directory and required Cargo environment. The shared tree may change before serial integration. Formal review remains downstream.
+
+### Review repair: bop-10-F1-reset-drops-params
+All eight resets preserve parameter values; Compresaturator retains in-place buffer clearing, and the seven Console constructors have no heap fields. A public API regression test covers non-default parameters and finite output. The pre-fix negative control failed as expected (exit 100; `tmp/behringer-oss-ports/bop-10/logs/f1-negative2.log`). On the shared tree, the six commands and exit statuses are recorded in `tmp/behringer-oss-ports/bop-10/logs/f1-gate-{parity,catalog,clippy,fmt,wasm,lines}.log`: all exit 0, with parity 9/9 and catalog/no_alloc 4/4. All 16 fixture hashes match bop-01 (exit 0; `logs/f1-gate-fixtures.log`). The original plugin list, parity classes and measured max-abs values remain as recorded above. Independent review and combined-tree integration remain downstream.

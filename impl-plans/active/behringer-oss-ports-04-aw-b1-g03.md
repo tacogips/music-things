@@ -1,6 +1,6 @@
 # Behringer OSS Ports 04: Airwindows Batch-1 Group g03 (kick list lines 17-24)
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-04
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances)
 **Depends On**: bop-01 (wave W3; runs in parallel with the other 13 group plans and bop-16c)
@@ -128,3 +128,29 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01
+**Tasks Completed**: Provisional ports and registration for BassKit, Baxandall, Baxandall2, Beam, Biquad and Biquad2. Each is Libm with measured max-abs 0 (logs/measurement-retry.log).
+**Tasks In Progress**: BassDrive and BigAmp are unimplemented and their parity records are unmeasured. No harness defect has been established.
+**Verification**: Isolated target `tmp/behringer-oss-ports/bop-04/check-final-target`; logs under `tmp/behringer-oss-ports/bop-04/logs/`. Parity command 1 exit 100, 8 run, 6 passed, 2 failed (check-final2-parity.log); catalog/no_alloc command 2 exit 0, 4 passed (check-final2-catalog.log); clippy command 3 exit 101 on sibling files, no g03 diagnostics (check-final2-clippy.log); rustfmt command 4 exit 0 (check-final2-rustfmt.log); wasm command 5 exit 0 (check-final2-wasm.log); line limit command 6 exit 0 (check-final2-lines.log). Commands are listed in Verification Commands above with the dispatched environment; the shared tree was moving.
+**Blockers**: Package-wide clippy currently reports diagnostics in sibling-owned files; their owners must repair them before this gate can pass. Complete the two missing ports, measure parity, and rerun all gates on current source.
+
+### Session: 2026-11-01 (continued)
+**Tasks Completed**: BassDrive implemented and registered; Libm, measured max-abs 0.0 (`logs/bassdrive-measure.log`). BassKit, Baxandall, Baxandall2, Beam, Biquad and Biquad2 remain Libm, max-abs 0.0 as recorded above.
+**Tasks In Progress**: BigAmp has an unregistered scaffold; its process path and parity measurement remain incomplete. No harness defect has been established. Group order: BassDrive, BassKit, Baxandall, Baxandall2, Beam, BigAmp, Biquad, Biquad2.
+**Verification**: Commands 1–6 above used the dispatched cargo environment and `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-04/final-20261101-target`; current-source logs `logs/turn3-{parity,catalog,clippy,rustfmt,wasm,lines}.log` respectively. Exits: 100 (8 run, 7 passed, BigAmp missing), 0 (4 passed), 101 (sibling g11 diagnostics), 0, 0, 0. The shared tree was moving; stable verification remains pending.
+**Blockers**: Package clippy requires repairs to sibling-owned g11 files `console8channelin.rs`, `console8subhype.rs`, `console8subin.rs`, and `crystal.rs`. Complete BigAmp and repeat all gates after sibling repairs.
+
+### Session: 2026-11-01 (redispatch 2)
+**Status**: BigAmp remains an unregistered scaffold; processing and measured parity are incomplete. No harness defect was established. The seven other plugins retain their previously recorded Libm, max-abs 0.0 measurements. The rust-coding agent investigated BigAmp and made no edits.
+**Verification**: The check-and-test-after-modify agent ran commands 1–6 above using the dispatched environment and `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-04/recheck-target`. Logs are `tmp/behringer-oss-ports/bop-04/logs/redispatch2-{parity,catalog,clippy,rustfmt,wasm,lines}.log`. Exits respectively: 100 (8 run, 7 passed, BigAmp missing), 0 (4 passed), 0, 0, 0, 0. The shared tree may change; repeat all gates after completing BigAmp.
+**Remaining work**: Implement and register BigAmp, measure and record parity, then repeat all six gates. No sibling Clippy blocker was observed in this run.
+
+### Session: 2026-11-01 (RW5 redispatch)
+**Progress**: BassDrive, BassKit, Baxandall, Baxandall2, Beam, Biquad and Biquad2 now preserve parameters during reset; all seven remain Libm, measured max-abs 0.0 as previously recorded. Reset assertions cover all eight group tests. The BigAmp scaffold gained filter coefficient setup and parameter-preserving reset, but its float processing and registration remain incomplete; no harness defect was established. Group order remains BassDrive, BassKit, Baxandall, Baxandall2, Beam, BigAmp, Biquad, Biquad2. BigAmp parity is unmeasured.
+**Verification**: Six dispatched commands above, with `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-04/verification-redispatch-target` and prescribed quiet environment, produced exits 100 (8 run, 7 passed, BigAmp unregistered), 0 (4 passed), 0, 0, 0, 0 respectively. Complete logs: `tmp/behringer-oss-ports/bop-04/logs/redispatch3-final-{parity,catalog,clippy,rustfmt,wasm,lines}.log`. Seven-plugin focused parity passed (7/7), `tmp/behringer-oss-ports/bop-04/reset/logs/seven-plugins.log`; the pre-fix BassDrive reset negative control failed as expected, `tmp/behringer-oss-ports/bop-04/reset/logs/negative-control.log`. Shared tree verification may need repetition at integration.
+**Remaining**: Translate BigAmp float processing, register it, measure parity and verify reset, then rerun all six gates. Formal review and integration remain downstream.
+
+### Session: 2026-11-01 (BigAmp completion)
+**Progress**: Completed and registered the BigAmp float port, including parameter-preserving reset and upstream seed replay. BigAmp is Libm with measured max-abs 0.0 across the existing fixture renders.
+**Verification**: With `CARGO_TARGET_DIR=target/bop-04-direct`, group parity (8 tests), catalog and no-allocation (4 tests), Clippy, rustfmt on the touched Rust files, and the wasm32 build all exited 0.

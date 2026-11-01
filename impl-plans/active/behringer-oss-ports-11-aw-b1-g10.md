@@ -1,6 +1,6 @@
 # Behringer OSS Ports 11: Airwindows Batch-1 Group g10 (kick list lines 73-80)
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-11
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances)
 **Depends On**: bop-01 (wave W3; runs in parallel with the other 13 group plans and bop-16c)
@@ -117,14 +117,34 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 
 ## Completion Criteria
 
-- [ ] All 8 plugins of lines 73-80 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-11/logs/`.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] All 8 plugins of lines 73-80 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-11/logs/`.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01
+**Tasks Completed**: Ported and registered Console7Buss, Console7Cascade, Console7Channel, Console7Crunch, Console8BusOut (upstream Console8BussOut), Console8BussHype, Console8BussIn and Console8ChannelHype in list order. Each is Libm, measured max-abs 0.0 across the three fixture renders (`tmp/behringer-oss-ports/bop-11/rust-coding/measure.log`).
+**Verification**: Commands 1 and 2 exited 0 (8/8 and 4/4 tests), command 3 exited 101 on sibling-owned group diagnostics, commands 4–6 exited 0. Complete current logs: `tmp/behringer-oss-ports/bop-11/logs/{parity-current,catalog-current,clippy-current,rustfmt-current,wasm-current,lines-current}.log`. Cargo commands use `CARGO_TERM_QUIET=true`; nextest also uses the required NEXTEST environment. Commands: `cargo nextest run -p music-things-airwindows --test parity_batch1_g10`; `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc`; `cargo clippy -p music-things-airwindows --all-targets -- -D warnings`; `find crates/airwindows/src/plugins/batch1/g10 crates/airwindows/tests/parity_batch1_g10.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check`; `cargo build -p music-things-airwindows --target wasm32-unknown-unknown`; and `test -z "$(find crates/airwindows/src/plugins/batch1/g10 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"`. Cargo used `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-11/check-target`.
+**Blocker**: Package-wide Clippy requires sibling owners to resolve diagnostics in groups g01, g03, g05, g06, g07, g08 and g14, then rerun command 3 on the combined tree. Formal reviews remain downstream.
+
+### Session: 2026-11-01 (current shared-tree verification)
+**Verification**: Re-ran the six dispatched commands with `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-11/check-target` and the required quiet Cargo/nextest environment. Parity passed 8/8, catalog and no-allocation passed 4/4; rustfmt, wasm build, and line limit passed. Clippy exited 101 on 24 diagnostics in sibling-owned g01, g11, and g14 files. Full logs are in `tmp/behringer-oss-ports/bop-11/logs/step6-rerun/{parity,catalog,clippy,rustfmt,wasm,lines}.log`. The shared tree was moving, so final stable verification remains necessary after those owners repair their files.
+**Blocker**: Rerun package-wide Clippy after sibling owners resolve the diagnostics recorded in `logs/step6-rerun/clippy.log`; do not modify their files under bop-11.
+
+### Continuation: 2026-11-01
+**Verification**: `CARGO_TERM_QUIET=true CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-11/check-target cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101; see `tmp/behringer-oss-ports/bop-11/logs/clippy-continuation-1-final.log`. Diagnostics remain in sibling-owned g11 files. The required gate remains outstanding until the sibling owner repairs them and Clippy is rerun on the shared tree.
+
+### Continuation: 2026-11-01 (verification retry)
+**Verification**: All six dispatched commands exited 0 on the current shared tree. Parity: 8/8; catalog and no-allocation: 4/4. The prior sibling Clippy blocker did not recur. Logs: `tmp/behringer-oss-ports/bop-11/logs/verify-agent-20261101/{parity,catalog,clippy,rustfmt,wasm,lines}.log`. Cargo used `CARGO_TARGET_DIR=$PWD/tmp/behringer-oss-ports/bop-11/verify-agent-target`, `CARGO_TERM_QUIET=true` and the prescribed nextest environment. Commands are the six commands in the Verification Commands section (the dispatched find-based format and line checks). The shared tree may continue to change; serial integration verification remains downstream.
+
+### Review repair: BOP11-S7-M1 (2026-11-01)
+Five parameterized plugins now preserve their parameter arrays across reset; the other three have no parameters and retain reconstruction-only reset. All eight parity tests invoke the value/display regression helper. Constructor DSP state and parity records remain unchanged. The pre-fix Console7Cascade regression failed as expected (exit 100, 0.39 versus 0.37) in `tmp/behringer-oss-ports/bop-11/logs/s7-m1/pre-fix-regression.log`.
+
+The six dispatched verification commands above all exited 0 on the current shared tree, using `CARGO_TARGET_DIR=$PWD/tmp/behringer-oss-ports/bop-11/s7-target`, `CARGO_TERM_QUIET=true`, and the prescribed nextest environment. Parity ran 8/8; catalog and no-allocation ran 4/4. Explicit exit codes and output are in `tmp/behringer-oss-ports/bop-11/logs/s7-m1/final2-{parity,catalog,clippy,rustfmt,wasm,lines}.log`. Fixture hashes match the original pre-hashes. Serial integration verification and independent review remain downstream.

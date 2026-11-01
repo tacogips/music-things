@@ -117,14 +117,48 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 
 ## Completion Criteria
 
-- [ ] All 8 plugins of lines 81-88 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-12/logs/`.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] All 8 plugins of lines 81-88 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-12/logs/`.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01
+**Status**: Incomplete. Initial unregistered, unverified ports: Console8ChannelIn, Console8ChannelOut, Console8SubHype, Console8SubIn, Console8SubOut. CrunchyGrooveWear, Crystal and CStrip are not implemented. All classes and max-abs measurements remain pending; no harness defect has been established. No completion criteria are met yet.
+
+**Verification** (moving shared tree; CARGO_TARGET_DIR=target/bop-12, CARGO_TERM_QUIET=true, NEXTEST_STATUS_LEVEL=fail, NEXTEST_FAILURE_OUTPUT=immediate-final, NEXTEST_HIDE_PROGRESS_BAR=1):
+- `cargo nextest run -p music-things-airwindows --test parity_batch1_g11`: exit 101, test target absent; `tmp/behringer-oss-ports/bop-12/logs/parity.log`.
+- `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc`: exit 101, sibling g02 compile errors; `tmp/behringer-oss-ports/bop-12/logs/catalog-no-alloc.log`.
+- `cargo clippy -p music-things-airwindows --all-targets -- -D warnings`: exit 101, sibling g02 compile errors; `tmp/behringer-oss-ports/bop-12/logs/clippy.log`.
+- `find crates/airwindows/src/plugins/batch1/g11 crates/airwindows/tests/parity_batch1_g11.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check`: pipeline exit 0, but find reported missing parity test; not a valid passing gate. `tmp/behringer-oss-ports/bop-12/logs/rustfmt.log` contains formatter output; missing-path diagnostic appeared on stderr.
+- `cargo build -p music-things-airwindows --target wasm32-unknown-unknown`: exit 101, sibling g02 compile errors; `tmp/behringer-oss-ports/bop-12/logs/wasm.log`.
+- `test -z "$(find crates/airwindows/src/plugins/batch1/g11 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"`: exit 0; `tmp/behringer-oss-ports/bop-12/logs/lines.log`.
+
+### Session: 2026-11-01 (continuation)
+**Status**: Eight plugins implemented and registered in order: Console8ChannelIn, Console8ChannelOut, Console8SubHype, Console8SubIn, Console8SubOut, CrunchyGrooveWear, Crystal, CStrip. Each is Libm with measured max-abs 0.0. Measurement: `logs/agent-cstrip-gate-parity.log`; final-source parity also passes.
+
+**Verification** (moving shared tree; `CARGO_TARGET_DIR=target/bop-12-check`, `CARGO_TERM_QUIET=true`, `NEXTEST_STATUS_LEVEL=fail`, `NEXTEST_FAILURE_OUTPUT=immediate-final`, `NEXTEST_HIDE_PROGRESS_BAR=1`; logs under `tmp/behringer-oss-ports/bop-12/logs/`):
+- `cargo nextest run -p music-things-airwindows --test parity_batch1_g11`: exit 0, 8 passed; `verified-parity.log`.
+- `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc`: exit 0, 4 passed; `verified-catalog.log`.
+- `cargo clippy -p music-things-airwindows --all-targets -- -D warnings`: exit 101; sibling `crates/airwindows/tests/parity_batch1_g05.rs:50` excessive precision; `verified-clippy.log`. Requires sibling correction and rerun.
+- `find crates/airwindows/src/plugins/batch1/g11 crates/airwindows/tests/parity_batch1_g11.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check`: exit 0; `verified-rustfmt.log`.
+- `cargo build -p music-things-airwindows --target wasm32-unknown-unknown`: exit 0; `verified-wasm.log`.
+- `test -z "$(find crates/airwindows/src/plugins/batch1/g11 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"`: exit 0; `verified-lines.log`.
+
+Formal review and workflow finalization remain downstream.
+
+### Session: 2026-11-01 (verification retry)
+All eight listed plugins retain Libm parity with measured max-abs 0.0. The current shared-tree retry passed all six gates; integration verification remains downstream. Commands used `CARGO_TARGET_DIR=$PWD/tmp/behringer-oss-ports/bop-12/verify-agent-target`, `CARGO_TERM_QUIET=true`, `NEXTEST_STATUS_LEVEL=fail`, `NEXTEST_FAILURE_OUTPUT=immediate-final`, and `NEXTEST_HIDE_PROGRESS_BAR=1`. Logs are under `tmp/behringer-oss-ports/bop-12/logs/` and record exit status.
+
+- `cargo nextest run -p music-things-airwindows --test parity_batch1_g11`: exit 0, 8/8; `agent-retry-parity.log`.
+- `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc`: exit 0, 4/4; `agent-retry-catalog.log`.
+- `cargo clippy -p music-things-airwindows --all-targets -- -D warnings`: exit 0; `agent-retry-clippy.log`.
+- `find crates/airwindows/src/plugins/batch1/g11 crates/airwindows/tests/parity_batch1_g11.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check`: exit 0; `agent-retry-rustfmt.log`.
+- `cargo build -p music-things-airwindows --target wasm32-unknown-unknown`: exit 0; `agent-retry-wasm.log`.
+- `test -z "$(find crates/airwindows/src/plugins/batch1/g11 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"`: exit 0; `agent-retry-lines.log`.

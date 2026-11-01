@@ -1,6 +1,6 @@
 # Behringer OSS Ports 16a: SoundFont Crate, MIDI Loader (tml.h port)
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-16a
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section B (API: midi; Modules: midi/; Parity method; tml tolerance)
 **Depends On**: bop-00 (wave W2; parallel with bop-01, bop-16b, bop-17a/b/c)
@@ -126,14 +126,39 @@ and a doc-only `src/midi/mod.rs`, which you now own and replace. It also created
 
 ## Completion Criteria
 
-- [ ] T1-T4 delivered with the pinned public names.
-- [ ] Exact parity for all three inputs.
-- [ ] Verifications 1-5 exit 0, with logs in `tmp/behringer-oss-ports/bop-16a/logs/`.
-- [ ] Only `writePaths` are modified, and every file is under 1000 lines.
-- [ ] Progress Log updated with commands, exit status, tests run/passed and log paths.
+- [x] T1-T4 delivered with the pinned public names.
+- [x] Exact parity for all three inputs.
+- [x] Verifications 1-5 exit 0, with logs in `tmp/behringer-oss-ports/bop-16a/logs/`.
+- [x] Only `writePaths` are modified, and every file is under 1000 lines.
+- [x] Progress Log updated with commands, exit status, tests run/passed and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-10-31 — implementation
+**Tasks Completed**: T1–T4; exact fixture parity and malformed input handling. Formal reviews remain downstream.
+
+| Command | Exit | Tests run/passed | Log |
+|---|---:|---:|---|
+| `MUSIC_THINGS_REFS=/Users/taco/gits/tacogips/music-things-refs CARGO_TERM_QUIET=true tools/soundfont-harness/generate_tml.sh --work-dir tmp/behringer-oss-ports/bop-16a/harness` | 0 | 1/1 | `tmp/behringer-oss-ports/bop-16a/logs/generate-final.log` |
+| `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-soundfont --test midi_parity` | 0 | 4/4 | `tmp/behringer-oss-ports/bop-16a/logs/nextest-final.log` |
+| `CARGO_TERM_QUIET=true cargo clippy -p music-things-soundfont --all-targets -- -D warnings` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-16a/logs/clippy-final.log` |
+| `find crates/soundfont/src/midi crates/soundfont/tests/midi_parity.rs crates/soundfont/tests/common/midi_builder.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-16a/logs/rustfmt-final.log` |
+| `CARGO_TERM_QUIET=true cargo build -p music-things-soundfont --target wasm32-unknown-unknown` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-16a/logs/wasm-final.log` |
+
+Initial parity failures and subsequent corrections are retained in `tmp/behringer-oss-ports/bop-16a/logs/nextest-initial-failed.log` and per-edit intent records.
+
+### Session: 2026-10-31 — BOP16A-TI-01 repair
+Partial track and message failures now retain upstream-compatible messages. Added late-truncation and invalid-tempo fixtures and parity tests. Existing scenario, format0 and first-track truncation fixture hashes remained unchanged. Independent review remains pending.
+
+| Command | Exit | Tests run/passed | Log |
+|---|---:|---:|---|
+| `MUSIC_THINGS_REFS=/Users/taco/gits/tacogips/music-things-refs CARGO_TERM_QUIET=true tools/soundfont-harness/generate_tml.sh --work-dir tmp/behringer-oss-ports/bop-16a/harness` | 0 | 1/1 | `tmp/behringer-oss-ports/bop-16a/logs/ti01-generate.log` |
+| `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-soundfont --test midi_parity` | 0 | 6/6 | `tmp/behringer-oss-ports/bop-16a/logs/ti01-nextest.log` |
+| `CARGO_TERM_QUIET=true cargo clippy -p music-things-soundfont --all-targets -- -D warnings` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-16a/logs/ti01-clippy.log` |
+| `find crates/soundfont/src/midi crates/soundfont/tests/midi_parity.rs crates/soundfont/tests/common/midi_builder.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-16a/logs/ti01-rustfmt.log` |
+| `CARGO_TERM_QUIET=true cargo build -p music-things-soundfont --target wasm32-unknown-unknown` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-16a/logs/ti01-wasm.log` |
+| `shasum -a 256 -c tmp/behringer-oss-ports/bop-16a/ti01-fixture-before.sha256` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-16a/logs/ti01-fixture-identity.log` |

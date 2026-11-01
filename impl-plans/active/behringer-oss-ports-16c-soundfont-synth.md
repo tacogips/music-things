@@ -1,6 +1,6 @@
 # Behringer OSS Ports 16c: SoundFont Crate, Synth Runtime (tsf.h voices, channels, render)
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-16c
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section B (Synth::new, Voice API, Channel API, Realtime behavior, Parity method S1/S2, tsf tolerance), D4
 **Depends On**: bop-16a, bop-16b (wave W3; parallel with bop-02..bop-15)
@@ -191,15 +191,21 @@ These four tests go in `crates/soundfont/tests/synth_parity.rs`.
 
 ## Completion Criteria
 
-- [ ] All public tsf voice, channel and render functions are mapped (the list is in the docs), with D4 behavior.
-- [ ] Lazy channel activation (`channel_num`, inactive-channel fallbacks, unguarded note-off/sounds-off voice scans, reset deactivation) is mirrored, and the four lazy-channel tests pass.
-- [ ] S1 and S2 parity are within 1e-5, and the measured max-abs is recorded.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-16c/logs/`.
-- [ ] Only `writePaths` are modified, and every file is under 1000 lines.
-- [ ] Progress Log updated with commands, exit status, tests run/passed and log paths.
+- [x] All public tsf voice, channel and render functions are mapped (the list is in the docs), with D4 behavior.
+- [x] Lazy channel activation (`channel_num`, inactive-channel fallbacks, unguarded note-off/sounds-off voice scans, reset deactivation) is mirrored, and the four lazy-channel tests pass.
+- [x] S1 and S2 parity are within 1e-5, and the measured max-abs is recorded.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-16c/logs/`.
+- [x] Only `writePaths` are modified, and every file is under 1000 lines.
+- [x] Progress Log updated with commands, exit status, tests run/passed and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01
+**Tasks Completed**: Synth runtime, reference harness, S1/S2 fixtures, lazy-channel and allocation tests. Formal review and workflow finalization remain downstream.
+**API mapping**: `tsf_set_output` and `tsf_set_max_voices` map to `Synth::new`; `tsf_set_volume`, `tsf_reset`, `tsf_note_on`, `tsf_bank_note_on`, `tsf_note_off`, `tsf_bank_note_off`, `tsf_note_off_all`, `tsf_active_voice_count`, and `tsf_render_float` map to the same names without `tsf_`. Channel mappings: `channel_set_presetindex`, `channel_set_presetnumber`, `channel_set_bank`, `channel_set_bank_preset`, `channel_set_pan`, `channel_set_volume`, `channel_set_pitchwheel`, `channel_set_pitchrange`, `channel_set_tuning`, `channel_set_sustain`, `channel_note_on`, `channel_note_off`, `channel_note_off_all`, `channel_sounds_off_all`, `channel_midi_control`, `channel_get_preset_index`, `channel_get_preset_bank`, `channel_get_preset_number`, `channel_get_pan`, `channel_get_volume`, `channel_get_pitchwheel`, `channel_get_pitchrange`, and `channel_get_tuning`.
+**Notes**: S1 and S2 measured max-abs 0.000000000 (aarch64-apple-darwin). Upstream reset starts a fast release; the inactive-channel scan test renders 512 frames to cover its 441-frame release. Inactive note-on returns success without starting a voice. Active pan getters mirror the pinned upstream subtraction. All owned Rust files are under 1000 lines.
+**Verification**: Commands 1-6 above exited 0; logs `tmp/behringer-oss-ports/bop-16c/logs/current-{1,2,3,4,5,6}.log`. Generator exporter: 1/1 tests; nextest: 17/17, 3 skipped. Clippy, rustfmt, wasm build and budget are non-test checks. Parity measurements: `CARGO_TERM_QUIET=true cargo test -p music-things-soundfont --test synth_parity render_s -- --nocapture`, 2/2 passed, log `tmp/behringer-oss-ports/bop-16c/logs/current-parity.log`. Earlier nextest failed 2/17 before filter precision and fixture-velocity fixes; retained in `logs/verification-2-attempt1.log`.

@@ -135,14 +135,37 @@ Context: bop-00 created `crates/pitch/src/lib.rs` (`pub mod smb;` ...), a doc-on
 
 ## Completion Criteria
 
-- [ ] T1-T3 delivered with the pinned API (shift at construction, f32 I/O), with D7/D8 and the WOL notice in the header.
-- [ ] Int16-domain parity within 3 LSB, with the measured value recorded.
-- [ ] Verifications 1-5 exit 0, with logs in `tmp/behringer-oss-ports/bop-17a/logs/`.
-- [ ] Only `writePaths` are modified, and every file is under 1000 lines.
-- [ ] Progress Log updated with commands, exit status, tests run/passed and log paths.
+- [x] T1-T3 delivered with the pinned API (shift at construction, f32 I/O), with D7/D8 and the WOL notice in the header.
+- [x] Int16-domain parity within 3 LSB, with the measured value recorded.
+- [x] Verifications 1-5 exit 0, with logs in `tmp/behringer-oss-ports/bop-17a/logs/`.
+- [x] Only `writePaths` are modified, and every file is under 1000 lines.
+- [x] Progress Log updated with commands, exit status, tests run/passed and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created; revised for IPR-1 (int16 upstream interface, D7/D8)
 **Notes**: -
+
+### Session: 2026-10-31 — implementation
+**Tasks Completed**: T1–T3, C1/C2 fixtures, 0 LSB maximum error for each configuration on Darwin arm64.
+**Blockers**: Required clippy gate fails in sibling-owned `crates/pitch/src/stft/mod.rs` and `crates/pitch/src/stft/stft.rs`; retry after bop-17b fixes those lints. Formal review remains downstream.
+
+| Command | Exit | Tests run/passed | Log |
+|---|---:|---:|---|
+| `MUSIC_THINGS_REFS=/Users/taco/gits/tacogips/music-things-refs tools/pitch-harness/smb/generate.sh --work-dir tmp/behringer-oss-ports/bop-17a/harness` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-17a/logs/generate.log` |
+| `CARGO_TARGET_DIR=target/bop-17a CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-pitch --test smb_parity --test smb_no_alloc` | 0 | 3/3 | `tmp/behringer-oss-ports/bop-17a/logs/nextest-final.log` |
+| `CARGO_TARGET_DIR=target/bop-17a CARGO_TERM_QUIET=true cargo clippy -p music-things-pitch --all-targets -- -D warnings` | 101 | 0/0 | `tmp/behringer-oss-ports/bop-17a/logs/clippy-retry.log` |
+| `rustfmt --edition 2021 --check crates/pitch/src/smb.rs crates/pitch/tests/smb_parity.rs crates/pitch/tests/smb_no_alloc.rs` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-17a/logs/rustfmt-final.log` |
+| `CARGO_TARGET_DIR=target/bop-17a CARGO_TERM_QUIET=true cargo build -p music-things-pitch --target wasm32-unknown-unknown` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-17a/logs/wasm-final.log` |
+
+The measured parity values are in `tmp/behringer-oss-ports/bop-17a/logs/rust-parity-attempt-01.log`; that test passed but its wrapper exited 1 due to a reserved shell variable. The authoritative nextest run above passed. All checks ran on the shared moving tree.
+
+### Continuation 1
+The previously blocked clippy gate passed after sibling changes: `CARGO_TARGET_DIR=target/bop-17a CARGO_TERM_QUIET=true cargo clippy -p music-things-pitch --all-targets -- -D warnings`, exit 0, tests 0/0; log `tmp/behringer-oss-ports/bop-17a/logs/clippy-continuation-1.log`. The earlier failure above is historical. Formal review remains downstream.
+
+On the changing shared tree, nextest and wasm initially exited 101 before tests due to transient missing methods in sibling `stft/core.rs` (`logs/nextest-continuation-1.log`, `logs/wasm-continuation-1.log`). Subsequent reruns passed:
+
+- `CARGO_TARGET_DIR=target/bop-17a CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-pitch --test smb_parity --test smb_no_alloc`: exit 0, 3/3 tests, `tmp/behringer-oss-ports/bop-17a/logs/nextest-continuation-retry.log`.
+- `CARGO_TARGET_DIR=target/bop-17a CARGO_TERM_QUIET=true cargo build -p music-things-pitch --target wasm32-unknown-unknown`: exit 0, 0/0 tests, `tmp/behringer-oss-ports/bop-17a/logs/wasm-continuation-retry.log`.
+- `CARGO_TARGET_DIR=target/bop-17a CARGO_TERM_QUIET=true cargo clippy -p music-things-pitch --all-targets -- -D warnings`: exit 0, 0/0 tests, `tmp/behringer-oss-ports/bop-17a/logs/clippy-continuation-final.log`.

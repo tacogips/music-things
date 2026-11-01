@@ -117,14 +117,70 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 
 ## Completion Criteria
 
-- [ ] All 8 plugins of lines 9-16 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-03/logs/`.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] All 8 plugins of lines 9-16 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-03/logs/`.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01
+**Status**: In Progress; implementation incomplete.
+**Plugins**: AtmosphereBuss, AtmosphereChannel, Aura, AutoPan (Libm, max-abs 0); Average, AverMatrix, Balanced (Exact, max-abs 0). BassAmp remains unimplemented and unregistered. Measurements cover the three sampled fixture renders; see `tmp/behringer-oss-ports/bop-03/logs/measure.log`.
+**Verification**: Cargo used `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-03/target CARGO_TERM_QUIET=true`; nextest additionally used `NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1`.
+
+| Command | Exit | Tests | Log |
+|---|---:|---:|---|
+| `cargo nextest run -p music-things-airwindows --test parity_batch1_g02` | 0 | 7/7; eighth missing | `tmp/behringer-oss-ports/bop-03/logs/final2-parity.log` |
+| `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `tmp/behringer-oss-ports/bop-03/logs/final2-catalog-noalloc.log` |
+| `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 101 | 0 | `tmp/behringer-oss-ports/bop-03/logs/final2-clippy.log` |
+| `find crates/airwindows/src/plugins/batch1/g02 crates/airwindows/tests/parity_batch1_g02.rs -name '*.rs' -print0 \| xargs -0 rustfmt --edition 2021 --check` | 0 | 0 | `tmp/behringer-oss-ports/bop-03/logs/final2-rustfmt.log` |
+| `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0 | `tmp/behringer-oss-ports/bop-03/logs/final2-wasm.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g02 -name '*.rs' -exec wc -l {} + \| awk '$2 != "total" && $1 >= 1000')"` | 0 | 0 | `tmp/behringer-oss-ports/bop-03/logs/final2-lines.log` |
+
+**Blocker**: Clippy reports errors in sibling-owned g01, g08 and g14 files, outside this plan's write paths. Their owners must repair them before the package gate can pass. BassAmp still requires implementation and parity verification; no harness defect was established.
+
+### Continuation: 2026-11-01
+**Completed**: BassAmp ported and registered after Balanced; Exact, measured max-abs 0 (`tmp/behringer-oss-ports/bop-03/logs/bassamp-measure.log`). The first parity attempt exposed the upstream left/right filter coupling; the port was corrected and the eighth test passes.
+**Verification**: Same six commands and environment as the preceding table, with logs prefixed `tmp/behringer-oss-ports/bop-03/logs/continuation-`: parity exit 0 (8/8), catalog/no_alloc exit 0 (4/4), clippy exit 101 (0 tests), rustfmt exit 0, wasm exit 0, lines exit 0. The clippy gate remains blocked by sibling-owned g01 and g14 files listed in `continuation-clippy.log`; no g02 diagnostic appears. All-gates completion remains unchecked.
+
+### Continuation 2: 2026-11-01
+`CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-03/target CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101; `tmp/behringer-oss-ports/bop-03/logs/continuation2-clippy.log` records 15 diagnostics in sibling-owned g01 and g14 files, and none in g02. Their repair is required before this gate can pass. The owned files and fixtures matched `post-hashes-continuation.txt` before this plan update (`logs/continuation2-hashes.log`); the earlier 8/8 parity evidence therefore remains source-matched.
+
+### Redispatch: 2026-11-01
+The required package clippy gate remains blocked: `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-03/target CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101. The complete log is `tmp/behringer-oss-ports/bop-03/logs/redispatch-clippy-final.log`; it reports 24 diagnostics in sibling-owned g01, g11 and g14 files, with none in g02. Their owners must repair the diagnostics before this gate can be rerun. The shared tree was moving during fanout; the prior passing gates require fresh stable-tree verification after repair.
+
+### Step 6 retry: 2026-11-01
+All eight plugins remain registered in list order. AtmosphereBuss, AtmosphereChannel, Aura and AutoPan: Libm, max-abs 0; Average, AverMatrix, Balanced and BassAmp: Exact, max-abs 0. Prior measurements are in `logs/measure.log` and `logs/bassamp-measure.log`. No Rust files were changed in this retry. The shared tree may still change; integration review must verify the combined tree.
+
+Cargo commands used `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-03/target CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1`. All logs below are under `tmp/behringer-oss-ports/bop-03/logs/`.
+
+| Command | Exit | Tests | Log |
+|---|---:|---:|---|
+| `cargo nextest run -p music-things-airwindows --test parity_batch1_g02` | 0 | 8/8 | `step6-retry-parity.log` |
+| `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `step6-retry-catalog.log` |
+| `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 0 | 0 | `step6-retry-clippy.log` |
+| `find crates/airwindows/src/plugins/batch1/g02 crates/airwindows/tests/parity_batch1_g02.rs -name '*.rs' -print0 \| xargs -0 rustfmt --edition 2021 --check` | 0 | 0 | `step6-retry-format.log` |
+| `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0 | `step6-retry-wasm.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g02 -name '*.rs' -exec wc -l {} + \| awk '$2 != "total" && $1 >= 1000')"` | 0 | 0 | `step6-retry-lines.log` |
+
+### Review repair RW5-1/bop-03: 2026-11-01
+Average, AverMatrix and Balanced now preserve parameters during reset; all eight plugins have reset parameter assertions. AtmosphereBuss, AtmosphereChannel, Aura and AutoPan remain Libm, max-abs 0; Average, AverMatrix, Balanced and BassAmp remain Exact, max-abs 0 (measurements in `logs/measure.log` and `logs/bassamp-measure.log`). The pre-fix regression negative control failed as expected (3/3 failures, exit 100; `logs/rw5-negative-agent.log`).
+
+Cargo commands used `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-03/target CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1`. Logs below are under `tmp/behringer-oss-ports/bop-03/logs/`; verification ran on the shared tree.
+
+| Command | Exit | Tests | Log |
+|---|---:|---:|---|
+| `cargo nextest run -p music-things-airwindows --test parity_batch1_g02` | 0 | 8/8 | `rw5-final-parity.log` |
+| `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `rw5-final-catalog.log` |
+| `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 0 | 0 | `rw5-final-clippy.log` |
+| `find crates/airwindows/src/plugins/batch1/g02 crates/airwindows/tests/parity_batch1_g02.rs -name '*.rs' -print0 \| xargs -0 rustfmt --edition 2021 --check` | 0 | 0 | `rw5-final-format.log` |
+| `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0 | `rw5-final-wasm.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g02 -name '*.rs' -exec wc -l {} + \| awk '$2 != "total" && $1 >= 1000')"` | 0 | 0 | `rw5-final-lines.log` |
+
+Formal review and stable-tree integration verification remain downstream.

@@ -1,6 +1,6 @@
 # Behringer OSS Ports 05: Airwindows Batch-1 Group g04 (kick list lines 25-32)
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-05
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances)
 **Depends On**: bop-01 (wave W3; runs in parallel with the other 13 group plans and bop-16c)
@@ -117,14 +117,52 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 
 ## Completion Criteria
 
-- [ ] All 8 plugins of lines 25-32 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-05/logs/`.
+- [x] All 8 plugins of lines 25-32 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-05/logs/`.
 - [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01
+**Tasks Completed**: Draft ports, registration and eight parity tests. Parity maxima measured on aarch64-apple-darwin (all max-abs 0): BiquadDouble, BiquadOneHalf, BiquadPlus, BiquadTriple, Bite, BitGlitter and BlockParty are Libm; BitShiftGain is Exact. Measurement log: `tmp/behringer-oss-ports/bop-05/logs/measurement.log`.
+
+**Verification** (isolated `CARGO_TARGET_DIR=target/bop-05-check`; logs under `tmp/behringer-oss-ports/bop-05/logs/`):
+
+| Command | Exit | Tests run/passed | Log |
+| --- | ---: | ---: | --- |
+| `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test parity_batch1_g04` | 0 | 8/8 | `check-agent-final2-parity.log` |
+| `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `check-agent-final2-catalog.log` |
+| `CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 101 | 0/0 | `check-agent-final2-clippy.log` |
+| `find crates/airwindows/src/plugins/batch1/g04 crates/airwindows/tests/parity_batch1_g04.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` | 0 | 0/0 | `check-agent-final2-rustfmt.log` |
+| `CARGO_TERM_QUIET=true cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0/0 | `check-agent-final2-wasm.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g04 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"` | 0 | 0/0 | `check-agent-final2-lines.log` |
+
+**Blocker**: The required package-wide Clippy gate reports 31 diagnostics in sibling-owned g01, g06, g07, g08 and g14 source files, none in g04. Those owners must fix their diagnostics before the gate is rerun. Formal reviews remain downstream.
+
+### Continuation 1
+Retried `CARGO_TARGET_DIR=target/bop-05-check CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings`: exit 101, 0 tests run. The complete log is `tmp/behringer-oss-ports/bop-05/logs/continuation1-clippy.log`. Nineteen diagnostics remain in sibling-owned g01, g06 and g14 files; no g04 diagnostic appeared. Those owners must resolve the errors before the required gate can pass.
+
+### Continuation 2
+Retried `CARGO_TARGET_DIR=target/bop-05-check CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings`: exit 101, 0 tests run. Complete log: `tmp/behringer-oss-ports/bop-05/logs/continuation2-clippy.log`. The 25 diagnostics are in sibling-owned g01, g06 and g14 files; none are in g04. The required gate remains blocked until those owners fix the errors.
+
+### Redispatch verification
+With `CARGO_TARGET_DIR=target/bop-05-check` and the configured quiet Cargo/nextest environment, parity passed 8/8 (`logs/redispatch-parity.log`), catalog and no-allocation passed 4/4 (`logs/redispatch-catalog.log`), rustfmt passed (`logs/redispatch-rustfmt.log`), wasm build passed (`logs/redispatch-wasm.log`), and the line limit passed (`logs/redispatch-lines.log`). Each exited 0. The exact commands are the six dispatch verification commands.
+
+The required package-wide Clippy command exited 101 (`logs/redispatch-clippy.log`), reporting 24 errors in sibling-owned g01, g11 and g14 files and none in g04. The respective owners must resolve those diagnostics before this gate can pass; rerun the command against the stable shared tree. Formal reviews remain downstream.
+
+### Progress-gate continuation
+`CARGO_TARGET_DIR=target/bop-05-check CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101; `tmp/behringer-oss-ports/bop-05/logs/progress-continuation-clippy-final.log` records 12 diagnostics in sibling-owned g11 `console8channelin.rs`, `console8subhype.rs`, `console8subin.rs`, and `crystal.rs`. The g11 owner must resolve these before the required gate can pass on the shared tree.
+
+### Fresh shared-tree verification
+All six dispatch commands exited 0 with `CARGO_TARGET_DIR=target/bop-05-check` and the configured quiet Cargo and nextest environment. Parity passed 8/8 (`logs/fresh-parity.log`); catalog and no-allocation passed 4/4 (`logs/fresh-catalog.log`); Clippy (`logs/fresh-clippy.log`), rustfmt (`logs/fresh-rustfmt.log`), wasm build (`logs/fresh-wasm.log`), and the line-limit check (`logs/fresh-lines.log`) passed. The prior sibling Clippy blocker is resolved in this shared-tree run. Final integrated-tree review remains downstream.
+
+### RW5-1 reset repair
+BiquadDouble, BiquadOneHalf, BiquadPlus and BiquadTriple now retain parameters across reset; all eight group tests assert this contract. The pre-fix BiquadPlus negative control exited 101 as expected (`tmp/behringer-oss-ports/bop-05/logs/rw5-negative-confirm.log`). Parity classes and measured max-abs remain as recorded above.
+
+On the shared tree, all six dispatch commands exited 0 using `CARGO_TARGET_DIR=target/bop-05-check` and the specified quiet environment. Parity: 8/8 (`logs/rw5-final-parity.log`); catalog/no_alloc: 4/4 (`logs/rw5-final-catalog.log`); clippy (`logs/rw5-final-clippy.log`), rustfmt (`logs/rw5-final-rustfmt.log`), wasm (`logs/rw5-final-wasm.log`), and line limit (`logs/rw5-final-lines.log`) passed. Log paths are relative to `tmp/behringer-oss-ports/bop-05/`. Formal review remains downstream.

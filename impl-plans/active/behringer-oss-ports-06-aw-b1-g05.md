@@ -1,6 +1,6 @@
 # Behringer OSS Ports 06: Airwindows Batch-1 Group g05 (kick list lines 33-40)
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-06
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances)
 **Depends On**: bop-01 (wave W3; runs in parallel with the other 13 group plans and bop-16c)
@@ -117,14 +117,78 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 
 ## Completion Criteria
 
-- [ ] All 8 plugins of lines 33-40 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-06/logs/`.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] All 8 plugins of lines 33-40 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-06/logs/`.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01
+**Tasks Completed**: Ported and registered BrassRider, BrightAmbience, BrightAmbience2, BrightAmbience3, BuildATPDF, BussColors4, ButterComp, ButterComp2 in list order. All are Libm with measured max-abs 0 except BuildATPDF (Exact, 0) and ButterComp2 (Libm, 5.960464477539e-8). ButterComp2 uses resettable per-instance noise counters; upstream counters persist across renders.
+
+**Verification**: Commands below use `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-06/check-target` and the quiet Cargo/nextest environment declared above. Logs are under `tmp/behringer-oss-ports/bop-06/logs/`.
+
+| Command | Exit | Tests passed/run | Log |
+|---|---:|---:|---|
+| `cargo nextest run -p music-things-airwindows --test parity_batch1_g05` | 0 | 8/8 | `check-agent-parity-final.log` |
+| `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `check-agent-catalog-final.log` |
+| `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 101 | 0/0 | `check-agent-clippy-final.log` |
+| `find crates/airwindows/src/plugins/batch1/g05 crates/airwindows/tests/parity_batch1_g05.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` | 0 | 0/0 | `check-agent-rustfmt-final.log` |
+| `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0/0 | `check-agent-wasm-final.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g05 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"` | 0 | 0/0 | `check-agent-lines-final.log` |
+
+**Blocker**: All-target Clippy reports diagnostics in sibling-owned g01, g06 and g14 source files. Their owners must resolve them before this gate can be rerun. Measurements are in `logs/measure-*.log`; intents and hashes are under the plan evidence directory. Formal review remains downstream.
+
+### Continuation 1: 2026-11-01
+`CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-06/check-target CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101 (0 tests); `tmp/behringer-oss-ports/bop-06/logs/clippy-continuation-1.log`. Diagnostics remain in sibling-owned g01 and g14 files. The g05 source, test and fixture hashes match `post-hashes.txt` (`logs/hash-continuation-1.log`); the earlier behavioral evidence remains applicable to those owned files. Rerun the gate after the sibling owners resolve the diagnostics.
+
+### Continuation 2: 2026-11-01
+Current shared-tree verification used `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-06/check-target`, `CARGO_TERM_QUIET=true`, and the plan's quiet nextest environment. Complete logs are under `tmp/behringer-oss-ports/bop-06/logs/`.
+
+| Command | Exit | Tests passed/run | Log |
+|---|---:|---:|---|
+| `cargo nextest run -p music-things-airwindows --test parity_batch1_g05` | 0 | 8/8 | `recheck2-parity.log` |
+| `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `recheck2-catalog.log` |
+| `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 101 | 0/0 | `recheck2-clippy.log` |
+| `find crates/airwindows/src/plugins/batch1/g05 crates/airwindows/tests/parity_batch1_g05.rs -name '*.rs' -print0 \| xargs -0 rustfmt --edition 2021 --check` | 0 | 0/0 | `recheck2-rustfmt.log` |
+| `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0/0 | `recheck2-wasm.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g05 -name '*.rs' -exec wc -l {} + \| awk '$2 != "total" && $1 >= 1000')"` | 0 | 0/0 | `recheck2-lines.log` |
+
+**Blocker**: Clippy reports 24 diagnostics in sibling-owned g01, g11, and g14 files; their owners must resolve them and the gate must be rerun. Formal review remains downstream.
+
+### Continuation 3: 2026-11-01
+`CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-06/check-target CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101, with 12 diagnostics in sibling-owned `g11/console8channelin.rs`, `g11/console8subhype.rs`, `g11/console8subin.rs`, and `g11/crystal.rs`. Complete log: `tmp/behringer-oss-ports/bop-06/logs/recheck4-clippy.log`. The g11 owner must resolve these diagnostics before this gate can pass; rerun the required gate on the shared tree. The earlier behavioral results were obtained on a moving shared tree and require stable-tree confirmation at the serial join.
+
+### Continuation 4: 2026-11-01
+All six required gates passed on the current shared tree using `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-06/verify-agent-target` and the prescribed quiet environment. Logs include explicit exit statuses under `tmp/behringer-oss-ports/bop-06/logs/`:
+
+| Gate | Exit | Passed/run | Log |
+|---|---:|---:|---|
+| `cargo nextest run -p music-things-airwindows --test parity_batch1_g05` | 0 | 8/8 | `verify-agent-parity.log` |
+| `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `verify-agent-catalog.log` |
+| `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 0 | 0/0 | `verify-agent-clippy.log` |
+| Owned Rust files: `rustfmt --edition 2021 --check` | 0 | 0/0 | `verify-agent-rustfmt.log` |
+| `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0/0 | `verify-agent-wasm.log` |
+| Owned source line limit check | 0 | 0/0 | `verify-agent-lines.log` |
+
+Formal review and stable integrated-tree verification remain downstream.
+
+### Review repair RW5-1: 2026-11-01
+Preserved parameters across reset for BrassRider, BrightAmbience, BrightAmbience2, BrightAmbience3, BuildATPDF, BussColors4, ButterComp and ButterComp2; each parity test now asserts preservation. Existing measured classes and maxima remain unchanged: BuildATPDF Exact 0; ButterComp2 Libm 5.960464477539e-8; the other six Libm 0. A pre-fix BrassRider regression run failed as expected (exit 100, 1/1 failed), `tmp/behringer-oss-ports/bop-06/logs/rw5-negative-confirmed.log`.
+
+Final source gates used `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-06/rw5-check-target CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1`. All logs below are in `tmp/behringer-oss-ports/bop-06/logs/`; these ran on the moving shared tree and stable integrated verification remains downstream.
+
+| Command | Exit | Passed/run | Log |
+|---|---:|---:|---|
+| `cargo nextest run -p music-things-airwindows --test parity_batch1_g05` | 0 | 8/8 | `rw5-check-parity.log` |
+| `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `rw5-check-catalog.log` |
+| `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 0 | 0/0 | `rw5-check-clippy.log` |
+| `find crates/airwindows/src/plugins/batch1/g05 crates/airwindows/tests/parity_batch1_g05.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` | 0 | 0/0 | `rw5-check-rustfmt.log` |
+| `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0/0 | `rw5-check-wasm.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g05 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"` | 0 | 0/0 | `rw5-check-lines.log` |

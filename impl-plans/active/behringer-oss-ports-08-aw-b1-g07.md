@@ -1,6 +1,6 @@
 # Behringer OSS Ports 08: Airwindows Batch-1 Group g07 (kick list lines 49-56)
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-08
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances)
 **Depends On**: bop-01 (wave W3; runs in parallel with the other 13 group plans and bop-16c)
@@ -117,14 +117,51 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 
 ## Completion Criteria
 
-- [ ] All 8 plugins of lines 49-56 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-08/logs/`.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] All 8 plugins of lines 49-56 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-08/logs/`.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01
+**Tasks Completed**: Channel4, Channel5, Channel6, Channel7, Channel8, Channel9, Chorus, ChorusEnsemble registered in order and tested. All are Libm, measured max-abs 0.0 on the fixture host; see `tmp/behringer-oss-ports/bop-08/measure-final.log`.
+**Blockers**: Package-wide clippy fails in sibling-owned g01, g08 and g14 files; no g07 diagnostics remain. Rerun after sibling repairs.
+
+| Command | Exit | Tests passed/run | Log |
+|---|---:|---:|---|
+| `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-08/check-target CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test parity_batch1_g07` | 0 | 8/8 | `tmp/behringer-oss-ports/bop-08/logs/final2-parity.log` |
+| `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-08/check-target CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `tmp/behringer-oss-ports/bop-08/logs/final2-catalog.log` |
+| `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-08/check-target CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 101 | - | `tmp/behringer-oss-ports/bop-08/logs/final2-clippy.log` |
+| `find crates/airwindows/src/plugins/batch1/g07 crates/airwindows/tests/parity_batch1_g07.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` | 0 | - | `tmp/behringer-oss-ports/bop-08/logs/final2-fmt.log` |
+| `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-08/check-target CARGO_TERM_QUIET=true cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | - | `tmp/behringer-oss-ports/bop-08/logs/final2-wasm.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g07 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"` | 0 | - | `tmp/behringer-oss-ports/bop-08/logs/final2-lines.log` |
+
+### Continuation 1: 2026-11-01
+`CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-08/check-target CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101; `tmp/behringer-oss-ports/bop-08/logs/continuation1-clippy.log` records diagnostics in sibling g01, g06 and g14 files only. No g07 diagnostics. The required gate remains blocked pending sibling repairs. The pre-continuation owned-file hashes all matched `post-hashes.txt` (`logs/continuation1-hashes.log`).
+
+### Continuation 2: 2026-11-01
+`CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-08/check-target CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101; `tmp/behringer-oss-ports/bop-08/logs/continuation2-clippy.log` records diagnostics in sibling g01 and g14 files only. No g07 diagnostics. The gate remains blocked pending sibling repairs. The pre-continuation owned files matched `continuation1-post-hashes.txt` (`logs/continuation2-hashes.log`).
+
+### Step 6 recheck: 2026-11-01
+The current shared tree passed parity (8/8), catalog/no_alloc (4/4), owned-file rustfmt, wasm build and the under-1000-line check. Package-wide clippy remains blocked by 15 diagnostics in sibling-owned `g01` and `g14`; no g07 diagnostics appeared. No Rust files were changed in this recheck. All commands used the plan-local `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-08/check-target` and the required quiet Cargo environment.
+
+| Command | Exit | Tests passed/run | Log |
+|---|---:|---:|---|
+| `cargo nextest run -p music-things-airwindows --test parity_batch1_g07` | 0 | 8/8 | `tmp/behringer-oss-ports/bop-08/logs/step6-current-parity.log` |
+| `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `tmp/behringer-oss-ports/bop-08/logs/step6-current-catalog.log` |
+| `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 101 | - | `tmp/behringer-oss-ports/bop-08/logs/step6-current-clippy.log` |
+| `find crates/airwindows/src/plugins/batch1/g07 crates/airwindows/tests/parity_batch1_g07.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` | 0 | - | `tmp/behringer-oss-ports/bop-08/logs/step6-current-fmt.log` |
+| `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | - | `tmp/behringer-oss-ports/bop-08/logs/step6-current-wasm.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g07 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"` | 0 | - | `tmp/behringer-oss-ports/bop-08/logs/step6-current-lines.log` |
+
+### Continuation 3: 2026-11-01
+`CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-08/check-target CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101. `tmp/behringer-oss-ports/bop-08/logs/continuation3-retry-clippy.log` records 12 diagnostics in sibling-owned g11 files and none in g07. The required gate remains blocked until those files are repaired. The initial attempt's exit capture failed because zsh reserves `status`; its output is preserved in `logs/continuation3-clippy.log`.
+
+### Redispatch 4: 2026-11-01
+All six required checks passed on the current shared tree: parity 8/8, catalog/no_alloc 4/4, clippy, rustfmt, wasm build and line limit each exited 0. Complete command output and exit statuses are in `tmp/behringer-oss-ports/bop-08/logs/redispatch4-{parity,catalog,clippy,fmt,wasm,lines}.log`. Cargo used `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-08/check-target CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1`. The earlier sibling Clippy blocker is resolved in this run. Formal reviews remain downstream.

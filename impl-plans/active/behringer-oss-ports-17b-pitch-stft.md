@@ -1,6 +1,6 @@
 # Behringer OSS Ports 17b: Pitch Crate, stftPitchShift Core Port
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-17b
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section C (stftPitchShift, rfft rule, asymmetric framesize, Parity table: stft offline/stream), D2, D8
 **Depends On**: bop-00 (wave W2; parallel with bop-01, bop-16a, bop-16b, bop-17a, bop-17c)
@@ -140,15 +140,30 @@ Context: bop-00 created `crates/pitch/src/stft/mod.rs` as a doc-only file (now y
 
 ## Completion Criteria
 
-- [ ] T1-T3 delivered with the pinned API, an RFFT port (no other FFT), and C++20 harness flags.
-- [ ] Offline parity within 1e-5 and stream consistency within 1e-6, with measured values recorded.
-- [ ] Verifications 1-5 exit 0, with logs in `tmp/behringer-oss-ports/bop-17b/logs/`.
-- [ ] Only `writePaths` are modified, and every file is under 1000 lines.
-- [ ] Asymmetric frame sizes ported and covered by C3; validation equals upstream plus D8 only.
-- [ ] Progress Log updated with commands, exit status, tests run/passed and log paths.
+- [x] T1-T3 delivered with the pinned API, an RFFT port (no other FFT), and C++20 harness flags.
+- [x] Offline parity within 1e-5 and stream consistency within 1e-6, with measured values recorded.
+- [x] Verifications 1-5 exit 0, with logs in `tmp/behringer-oss-ports/bop-17b/logs/`.
+- [x] Only `writePaths` are modified, and every file is under 1000 lines.
+- [x] Asymmetric frame sizes ported and covered by C3; validation equals upstream plus D8 only.
+- [x] Progress Log updated with commands, exit status, tests run/passed and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-10-31 — implementation
+**Tasks Completed**: T1–T3. RFFT, spectral modules, offline and streaming APIs, C++20 harness and C1–C3 fixtures. Formal review and integration are downstream.
+
+**Measurements**: Offline max absolute errors C1 0.000002563, C2 0.000003472, C3 0.000002325; stream max error 0 for all cases, latency 1025 samples. The counting allocator observed zero allocations. The upstream Pitcher selects the strongest magnitude per bin for multiple factors; the earlier “sums” pitfall sentence is inconsistent with the pinned source and parity, so the port follows upstream.
+
+| Verification | Exit | Tests run/passed | Log |
+|---|---:|---:|---|
+| `MUSIC_THINGS_REFS=/Users/taco/gits/tacogips/music-things-refs tools/pitch-harness/stft/generate.sh --work-dir tmp/behringer-oss-ports/bop-17b/harness` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-17b/logs/harness.log` |
+| `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-17b/target CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-pitch --test stft_parity --test stft_stream --test stft_no_alloc --success-output immediate` | 0 | 4/4 | `tmp/behringer-oss-ports/bop-17b/logs/nextest-current.log` |
+| `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-17b/target CARGO_TERM_QUIET=true cargo clippy -p music-things-pitch --all-targets -- -D warnings` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-17b/logs/clippy-current.log` |
+| `find crates/pitch/src/stft crates/pitch/tests/stft_parity.rs crates/pitch/tests/stft_stream.rs crates/pitch/tests/stft_no_alloc.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-17b/logs/rustfmt-current.log` |
+| `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-17b/wasm-target CARGO_TERM_QUIET=true cargo build -p music-things-pitch --target wasm32-unknown-unknown` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-17b/logs/wasm-current.log` |
+
+Exact commands and intermediate attempts are recorded in the plan-local logs and Step 6 handoff. Cargo build outputs were isolated in the plan artifact directory. The shared working tree was moving during these checks; serial integration revalidates the combined tree.

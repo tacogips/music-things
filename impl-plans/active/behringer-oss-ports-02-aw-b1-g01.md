@@ -119,14 +119,51 @@ leave its `mod` line out. Once bop-01 fixes it, regenerate only your files with
 
 ## Completion Criteria
 
-- [ ] All 8 plugins of lines 1-8 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-02/logs/`.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] All 8 plugins of lines 1-8 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-02/logs/`.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01
+**Status**: Blocked; implementation incomplete.
+**Plugin list**: Acceleration, Acceleration2, ADClip7, ADT, Air, Air2, Apicolypse, AQuickVoiceClip.
+**Progress**: Seven provisional ports and parity tests are present; ADClip7 remains unimplemented. All provisional records currently say Libm with measurement pending; the recorded zero values are placeholders, not measurements. Acceleration passed one earlier focused parity run (`logs/acceleration-parity.log`, 1/1), before subsequent shared-tree changes.
+**Blocker**: Required cargo gates fail before testing with E0507 in sibling-owned `g02/mod.rs` and `g12/mod.rs`; see `tmp/behringer-oss-ports/bop-02/logs/check-agent-parity.log`. The owners must repair their registrations before this plan can complete and rerun its gates. No harness defect has been established.
+**Checks on moving tree**: `cargo nextest run -p music-things-airwindows --test parity_batch1_g01` exit 101, 0 tests (`logs/check-agent-parity.log`); `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` exit 101, 0 tests (`logs/check-agent-catalog.log`); `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exit 101 (`logs/check-agent-clippy.log`); scoped rustfmt check exit 1 (`logs/check-agent-rustfmt.log`); `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` exit 101 (`logs/check-agent-wasm.log`); file-size check exit 0 (`logs/check-agent-lines.log`). Log paths are relative to `tmp/behringer-oss-ports/bop-02/`.
+**Remaining**: Finish ADClip7, verify and correct every provisional port, measure maxima, format owned files, rerun all six gates and update the criteria. Formal reviews follow implementation.
+
+
+### Session: 2026-11-01 (continued)
+**Status**: Blocked on shared-tree Clippy; implementation verification incomplete.
+**Plugins and parity**: Acceleration, Acceleration2, ADClip7, ADT, Air, Air2, Apicolypse, AQuickVoiceClip: each Libm, measured max-abs 0.0 on aarch64-apple-darwin across all three fixture renders (`tmp/behringer-oss-ports/bop-02/logs/measure-01.log`, exit 0). ADClip7 is now implemented and registered; g01 Clippy diagnostics repaired.
+**Checks on moving shared tree**: `CARGO_TERM_QUIET=true CARGO_TARGET_DIR=target/bop-02 cargo nextest run -p music-things-airwindows --test parity_batch1_g01` exit 0, 8/8 (`logs/final2-parity.log`); `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` exit 0, 4/4 (`logs/final2-catalog-no-alloc.log`); `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exit 101 (`logs/final2-clippy.log`), exclusively sibling g11 diagnostics; scoped rustfmt check exit 0 (`logs/final2-rustfmt.log`); wasm build exit 0 (`logs/final2-wasm.log`); line-count check exit 0 (`logs/final2-lines.log`). Cargo runs use the required quiet and nextest environment and isolated target directory. Logs are relative to `tmp/behringer-oss-ports/bop-02/`.
+**Resume criterion**: g11 owner repairs Clippy errors in console8channelin.rs, console8subhype.rs, console8subin.rs and crystal.rs; rerun all required gates on a stable shared tree. Formal reviews and workflow finalization remain downstream.
+
+### Continuation 1: 2026-11-01
+**Status**: Blocked on shared-tree Clippy; the prior g11 diagnostics no longer appear. All eight plugins remain Libm with measured max-abs 0.0 as recorded above.
+**Moving-tree verification**: `CARGO_TARGET_DIR=target/bop-02 CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test parity_batch1_g01` exit 0, 8/8 (`logs/continuation1-parity.log`); same environment, `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` exit 0, 4/4 (`logs/continuation1-catalog-no-alloc.log`); `CARGO_TARGET_DIR=target/bop-02 CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exit 101 (`logs/continuation1-clippy.log`); scoped rustfmt exit 0 (`logs/continuation1-rustfmt.log`); wasm build exit 0 (`logs/continuation1-wasm.log`); line check exit 0 (`logs/continuation1-lines.log`). Logs are relative to `tmp/behringer-oss-ports/bop-02/`.
+**Resume criterion**: g05 owner repairs `crates/airwindows/tests/parity_batch1_g05.rs:50` excessive-precision Clippy error; rerun required checks on the shared tree. No g01 files were changed in this continuation.
+
+### Continuation 2: 2026-11-01
+**Status**: Implementation gates passed on the current shared tree; formal review remains downstream. No Rust files changed in this continuation.
+**Plugins and parity**: Acceleration, Acceleration2, ADClip7, ADT, Air, Air2, Apicolypse, AQuickVoiceClip: Libm, measured max-abs 0.0 each (`logs/measure-01.log`).
+**Verification**: With `CARGO_TARGET_DIR=target/bop-02 CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1`, `cargo nextest run -p music-things-airwindows --test parity_batch1_g01` exit 0, 8/8 (`logs/redispatch2-parity.log`); `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` exit 0, 4/4 (`logs/redispatch2-catalog.log`); `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exit 0 (`logs/redispatch2-clippy.log`); `find crates/airwindows/src/plugins/batch1/g01 crates/airwindows/tests/parity_batch1_g01.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` exit 0 (`logs/redispatch2-rustfmt.log`); `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` exit 0 (`logs/redispatch2-wasm.log`); `test -z "$(find crates/airwindows/src/plugins/batch1/g01 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"` exit 0 (`logs/redispatch2-lines.log`). Logs relative to `tmp/behringer-oss-ports/bop-02/`; quiet checks have empty logs and their exits were observed. Shared-tree integration verification remains downstream.
+
+### Review revision: BOP02-RESET-PARAMS
+The rust-coding agent preserved parameters across reset in Acceleration, Acceleration2, ADClip7, ADT, Apicolypse and AQuickVoiceClip. The existing eight parity tests now also assert every parameter remains 0.37 after reset; Air and Air2 already preserved them. Parity classes and fixtures remain unchanged; previously measured maxima are 0.0 for each plugin (`logs/measure-01.log`).
+
+On the current shared tree, with `CARGO_TARGET_DIR=target/bop-02-review CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1`, the check-and-test-after-modify agent recorded explicit exits in `tmp/behringer-oss-ports/bop-02/logs/`:
+- `cargo nextest run -p music-things-airwindows --test parity_batch1_g01`: exit 0, 8/8 (`review-reset-parity.log`).
+- `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc`: exit 0, 4/4 (`review-reset-catalog.log`).
+- `cargo clippy -p music-things-airwindows --all-targets -- -D warnings`: exit 0 (`review-reset-clippy.log`).
+- `find crates/airwindows/src/plugins/batch1/g01 crates/airwindows/tests/parity_batch1_g01.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check`: exit 0 (`review-reset-rustfmt.log`).
+- `cargo build -p music-things-airwindows --target wasm32-unknown-unknown`: exit 0 (`review-reset-wasm.log`).
+- `test -z "$(find crates/airwindows/src/plugins/batch1/g01 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"`: exit 0 (`review-reset-lines.log`).
+Independent re-review and stable-tree integration remain downstream. The pre-fix defect was confirmed by source inspection, not a behavioral run.

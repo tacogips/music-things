@@ -1,6 +1,6 @@
 # Behringer OSS Ports 01: Airwindows Framework, Harness and Batch-1 Fixtures
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-01
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Public API, Framework internals, Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances), D1/D5/D6
 **Depends On**: bop-00 (wave W2; runs in parallel with bop-16a, bop-16b, bop-17a/b/c)
@@ -262,14 +262,31 @@ Concrete repository-relative paths (no globs). A directory entry owns every file
 
 ## Completion Criteria
 
-- [ ] T1-T7 symbols exist exactly as pinned, and `cargo doc -p music-things-airwindows --no-deps` builds.
-- [ ] All 110 batch-1 plugins compile and run in the harness, and 220 fixture files exist under `batch1/gNN/`.
-- [ ] Verifications 1-7 pass with logs in `tmp/behringer-oss-ports/bop-01/logs/`.
-- [ ] No file outside this plan's `writePaths` is modified (`git status` checked).
-- [ ] Progress Log updated with commands, exit status, tests run/passed and log paths.
+- [x] T1-T7 symbols exist exactly as pinned, and `cargo doc -p music-things-airwindows --no-deps` builds.
+- [x] All 110 batch-1 plugins compile and run in the harness, and 220 fixture files exist under `batch1/gNN/`.
+- [x] Verifications 1-7 pass with logs in `tmp/behringer-oss-ports/bop-01/logs/`.
+- [x] No file outside this plan's `writePaths` is modified (`git status` checked).
+- [x] Progress Log updated with commands, exit status, tests run/passed and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-10-31 — implementation
+**Tasks Completed**: T1–T8; formal reviews and integration are downstream. Only bop-01 owned files were edited; `git status --short` also shows concurrent sibling-plan changes.
+
+| Command | Exit | Tests run / passed | Log |
+|---|---:|---:|---|
+| `TMPDIR=$PWD/tmp/behringer-oss-ports/bop-01/harness/tmp MUSIC_THINGS_REFS=/Users/taco/gits/tacogips/music-things-refs tools/airwindows-harness/generate.sh --work-dir tmp/behringer-oss-ports/bop-01/harness --out-root crates/airwindows/tests/fixtures` | 0 | 0 / 0 | `tmp/behringer-oss-ports/bop-01/logs/generate.log` |
+| `test "$(find crates/airwindows/tests/fixtures/batch1 -name '*.f32' \| wc -l \| tr -d ' ')" = 110` | 0 | 0 / 0 | `tmp/behringer-oss-ports/bop-01/logs/count.log` |
+| `test -z "$(find crates/airwindows/tests/fixtures/batch1 -name '*.f32' ! -size 12096c)"` | 0 | 0 / 0 | `tmp/behringer-oss-ports/bop-01/logs/sizes.log` |
+| `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-01/check-target cargo nextest run -p music-things-airwindows` | 0 | 8 / 8 | `tmp/behringer-oss-ports/bop-01/logs/check-agent/nextest-after-generation.log` |
+| `CARGO_TERM_QUIET=true CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-01/check-target cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0 / 0 | `tmp/behringer-oss-ports/bop-01/logs/check-agent/wasm-after-generation.log` |
+| `CARGO_TERM_QUIET=true CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-01/check-target cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 0 | 0 / 0 | `tmp/behringer-oss-ports/bop-01/logs/check-agent/clippy-after-generation.log` |
+| `find crates/airwindows -name '*.rs' -print0 \| xargs -0 rustfmt --edition 2021 --check` | 0 | 0 / 0 | `tmp/behringer-oss-ports/bop-01/logs/check-agent/rustfmt-after-generation.log` |
+| `test "$(find crates/airwindows/tests/fixtures -type f -exec stat -f %z {} + \| awk '{s+=$1} END {print s+0}')" -le 1600000` | 0 | 0 / 0 | `tmp/behringer-oss-ports/bop-01/logs/budget.log` |
+| `CARGO_TERM_QUIET=true CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-01/check-target cargo doc -p music-things-airwindows --no-deps` | 0 | 0 / 0 | `tmp/behringer-oss-ports/bop-01/logs/check-agent/doc-after-generation.log` |
+
+Fixture apparent bytes: 1,406,647 total; 1,330,560 `.f32`, 76,087 `.txt` (including format vectors). Earlier full generation exposed missing inherited parameter methods for ClipOnly; the shim was repaired and the full run succeeded. Earlier failure: `tmp/behringer-oss-ports/bop-01/logs/generate-attempt-3.log`.

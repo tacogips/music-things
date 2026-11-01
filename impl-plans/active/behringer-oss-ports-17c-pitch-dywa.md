@@ -1,6 +1,6 @@
 # Behringer OSS Ports 17c: Pitch Crate, dywapitchtrack Port
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-17c
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section C (dywapitchtrack, Parity table: dywa), D3
 **Depends On**: bop-00 (wave W2; parallel with bop-01, bop-16a, bop-16b, bop-17a, bop-17b)
@@ -109,14 +109,35 @@ test twins `tests/common/{stimulus,fnv}.rs`.
 
 ## Completion Criteria
 
-- [ ] T1-T3 delivered with the pinned API, and D3 is documented in the module docs.
-- [ ] Parity within relative 1e-9.
-- [ ] Verifications 1-5 exit 0, with logs in `tmp/behringer-oss-ports/bop-17c/logs/`.
-- [ ] Only `writePaths` are modified, and every file is under 1000 lines.
-- [ ] Progress Log updated with commands, exit status, tests run/passed and log paths.
+- [x] T1-T3 delivered with the pinned API, and D3 is documented in the module docs.
+- [x] Parity within relative 1e-9.
+- [x] Verifications 1-5 exit 0, with logs in `tmp/behringer-oss-ports/bop-17c/logs/`.
+- [x] Only `writePaths` are modified, and every file is under 1000 lines.
+- [x] Progress Log updated with commands, exit status, tests run/passed and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-10-31 implementation
+**Tasks Completed**: T1-T3; upstream fixtures and focused parity, streaming, configuration and allocation tests.
+**Blockers**: Required clippy gate fails on sibling-owned `crates/pitch/src/stft/mod.rs:7` and `crates/pitch/src/stft/stft.rs:97`; rerun after bop-17b repair. Formal review remains downstream.
+
+| Command | Exit | Tests run/passed | Complete log |
+|---|---:|---:|---|
+| `MUSIC_THINGS_REFS=/Users/taco/gits/tacogips/music-things-refs tools/pitch-harness/dywa/generate.sh --work-dir tmp/behringer-oss-ports/bop-17c/harness` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-17c/logs/generate.log` |
+| `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-pitch --test dywa_parity --test dywa_no_alloc` | 0 | 3/3 | `tmp/behringer-oss-ports/bop-17c/logs/nextest-final.log` |
+| `CARGO_TERM_QUIET=true cargo clippy -p music-things-pitch --all-targets -- -D warnings` | 101 | 0/0 | `tmp/behringer-oss-ports/bop-17c/logs/clippy-final.log` |
+| `rustfmt --edition 2021 --check crates/pitch/src/dywa.rs crates/pitch/tests/dywa_parity.rs crates/pitch/tests/dywa_no_alloc.rs` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-17c/logs/rustfmt-final.log` |
+| `CARGO_TERM_QUIET=true cargo build -p music-things-pitch --target wasm32-unknown-unknown` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-17c/logs/wasm-final.log` |
+
+An earlier clippy failure in dywa was fixed; its log is `tmp/behringer-oss-ports/bop-17c/logs/clippy.log`.
+
+### Session: 2026-11-01 continuation
+**Tasks Completed**: Re-ran the previously blocked package-wide clippy gate after the sibling repair. The prior failed attempt remains recorded above; the owned implementation and fixture hashes still match `tmp/behringer-oss-ports/bop-17c/post-hashes.txt` before this plan update. Formal review remains downstream.
+
+| Command | Exit | Tests run/passed | Complete log |
+|---|---:|---:|---|
+| `CARGO_TERM_QUIET=true CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-17c/target cargo clippy -p music-things-pitch --all-targets -- -D warnings` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-17c/logs/clippy-redispatch.log` |

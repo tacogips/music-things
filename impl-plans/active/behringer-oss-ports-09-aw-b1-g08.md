@@ -117,9 +117,9 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 
 ## Completion Criteria
 
-- [ ] All 8 plugins of lines 57-64 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-09/logs/`.
+- [x] All 8 plugins of lines 57-64 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-09/logs/`.
 - [ ] Only `writePaths` are modified.
 - [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
@@ -128,3 +128,36 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01
+**Tasks Completed**: Eight ports, ordered registration and parity tests.
+**Measurements**: ChromeOxide Libm 0; Cider Libm 0; ClipOnly Exact 0; ClipOnly2 Exact 0; ClipSoftly Libm 0; Coils Libm 0; Coils2 Libm 0; Cojones Exact 0. Logs: `tmp/behringer-oss-ports/bop-09/logs/measure-six.log`, `cider-measure.log`, `clipsoftly-measurement.log`.
+**Verification**: `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=target/bop-09 cargo nextest run -p music-things-airwindows --test parity_batch1_g08` exit 0, 8/8 (`logs/chromeoxide-post-nextest.log`); `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` exit 0, 4/4 (`logs/catalog-no-alloc-final.log`); `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exit 101 (`logs/clippy-after-chromeoxide.log`), with diagnostics in sibling g01 and g14, none in g08; owned rustfmt check exit 0 (`logs/rustfmt-final.log`); `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` exit 0 (`logs/wasm-final.log`); line limit check exit 0 (`logs/line-limit-final.log`). Cargo commands used `CARGO_TERM_QUIET=true` and plan-local target; nextest used the specified NEXTEST variables. All logs are under `tmp/behringer-oss-ports/bop-09/`. The package-wide Clippy gate must be rerun after sibling owners repair their files.
+
+**Continuation 1**: `CARGO_TERM_QUIET=true CARGO_TARGET_DIR=target/bop-09 cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101. Complete log: `tmp/behringer-oss-ports/bop-09/logs/clippy-continuation-1.log`. The 15 diagnostics are in sibling-owned `g01/{acceleration2,air,air2,apicolypse,adt}.rs` and `g14/{distance,distance2,distortion}.rs`; no g08 diagnostic was reported. The gate remains blocked pending sibling repairs and a successful rerun.
+
+**Continuation 2**: `CARGO_TERM_QUIET=true CARGO_TARGET_DIR=target/bop-09 cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101; `tmp/behringer-oss-ports/bop-09/logs/clippy-continuation-2.log` records the same 15 sibling g01/g14 diagnostics. No g08 diagnostics were reported. The gate remains blocked pending sibling repairs.
+
+**Current Step 6 rerun**: `CARGO_TERM_QUIET=true CARGO_TARGET_DIR=target/bop-09 cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101; complete log: `tmp/behringer-oss-ports/bop-09/logs/clippy-step6-current.log`. The 15 diagnostics remain in sibling-owned g01 and g14 files, with none reported in g08. The required gate remains blocked until those owners repair their files and Clippy passes on the shared tree.
+
+
+**Fresh Step 6 verification (2026-11-01)**: All commands exited 0 on the shared tree; logs are under `tmp/behringer-oss-ports/bop-09/logs/retry-nov01/`. The tree may change after this run.
+
+1. `CARGO_TARGET_DIR=target/bop-09-retry CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test parity_batch1_g08`: 8/8, `parity.log`.
+2. `CARGO_TARGET_DIR=target/bop-09-retry CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test catalog --test no_alloc`: 4/4, `catalog.log`.
+3. `CARGO_TARGET_DIR=target/bop-09-retry CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings`: `clippy.log`.
+4. `find crates/airwindows/src/plugins/batch1/g08 crates/airwindows/tests/parity_batch1_g08.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check`: `rustfmt.log`.
+5. `CARGO_TARGET_DIR=target/bop-09-retry CARGO_TERM_QUIET=true cargo build -p music-things-airwindows --target wasm32-unknown-unknown`: `wasm.log`.
+6. `test -z "$(find crates/airwindows/src/plugins/batch1/g08 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"`: `lines.log`.
+
+
+**RW5-1 repair (2026-11-01)**: ChromeOxide, Cider, Coils, Coils2 and Cojones retain parameter arrays across reset while reconstructing DSP state. All eight parity tests assert reset parameter preservation. Negative control: `CARGO_TARGET_DIR=target/bop-09-rw5 CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test parity_batch1_g08 -E 'test(cider)'` exited 100, 1 failed before the fix (`logs/rw5-reset/negative.log`). Final shared-tree checks, all exit 0 (logs under `tmp/behringer-oss-ports/bop-09/logs/rw5-reset/`):
+
+1. `CARGO_TARGET_DIR=target/bop-09-rw5 CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test parity_batch1_g08`: 8/8, `parity.log`.
+2. `CARGO_TARGET_DIR=target/bop-09-rw5 CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test catalog --test no_alloc`: 4/4, `catalog.log`.
+3. `CARGO_TARGET_DIR=target/bop-09-rw5 CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings`: `clippy.log`.
+4. `find crates/airwindows/src/plugins/batch1/g08 crates/airwindows/tests/parity_batch1_g08.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check`: `rustfmt.log`.
+5. `CARGO_TARGET_DIR=target/bop-09-rw5 CARGO_TERM_QUIET=true cargo build -p music-things-airwindows --target wasm32-unknown-unknown`: `wasm.log`.
+6. `test -z "$(find crates/airwindows/src/plugins/batch1/g08 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"`: `lines.log`.
+
+Formal review and final integration remain downstream.

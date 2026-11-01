@@ -1,6 +1,6 @@
 # Behringer OSS Ports 16b: SoundFont Crate, SF2 Loading (tsf.h load path)
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-16b
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section B (API: SoundFont::load and preset queries; Modules: font/; Parity method: font load dump; tolerances)
 **Depends On**: bop-00 (wave W2; parallel with bop-01, bop-16a, bop-17a/b/c)
@@ -13,7 +13,7 @@ Port the load half of TinySoundFont `tsf.h` (@ `853a0a171759f1ddba0de1442133a759
 - RIFF/sfbk parsing and the hydra chunks (phdr, pbag, pmod, pgen, inst, ibag, imod, igen, shdr)
 - region generator resolution (global zones, preset and instrument generator merging, operator
   application, timecent/centibel conversions)
-- 16-bit and `sm24` sample decoding into the shared f32 sample buffer
+- 16-bit sample decoding into the shared f32 sample buffer; `sm24` is ignored
 - the preset query functions
 
 The result is `music_things_soundfont::font`. bop-16c builds the synth on the internal structs, so
@@ -110,8 +110,7 @@ editing it.
 
 ## Key Pitfalls
 
-- tsf converts samples by `(float)s16 / 32768.0f`, combined with the sm24 low byte. Copy the exact
-  expression, and apply the 24-bit path only when `sm24` is present and valid, as upstream does.
+- Decode each i16 as `((s as f64) / 32767.0) as f32`, matching pinned `tsf.h:964,1000`; upstream does not read `sm24`.
 - Generator amount types differ (signed/unsigned, and ranges as lo/hi bytes). Reproduce tsf's union
   reads exactly.
 - Global-zone inheritance and the instrument/preset additive merge order must match upstream
@@ -135,14 +134,35 @@ editing it.
 
 ## Completion Criteria
 
-- [ ] T1-T4 delivered, with the internal struct mirroring documented in `font/mod.rs` docs for bop-16c.
-- [ ] Load parity holds for the synthetic and truncated inputs.
-- [ ] Verifications 1-5 exit 0, with logs in `tmp/behringer-oss-ports/bop-16b/logs/`.
-- [ ] Only `writePaths` are modified, and every file is under 1000 lines.
-- [ ] Progress Log updated with commands, exit status, tests run/passed and log paths.
+- [x] T1-T4 delivered, with the internal struct mirroring documented in `font/mod.rs` docs for bop-16c.
+- [x] Load parity holds for the synthetic and truncated inputs.
+- [x] Verifications 1-5 exit 0, with logs in `tmp/behringer-oss-ports/bop-16b/logs/`.
+- [x] Only `writePaths` are modified, and every file is under 1000 lines.
+- [x] Progress Log updated with commands, exit status, tests run/passed and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-10-31 — implementation blocked
+**Tasks Completed**: Dependency admission and design alignment checked; no loader implementation completed.
+**Blocker**: Pinned `tsf.h` divides 16-bit samples by `32767.0` and skips `sm24`, while this plan requires division by `32768.0f`, `sm24` decoding, and exact upstream sample FNV parity. An accepted design/plan amendment must resolve these incompatible requirements.
+**Evidence**: `tmp/behringer-oss-ports/bop-16b/logs/upstream-readiness.log` records the source inspection and revision check (both exit 0; no tests). Verification commands 1–5 were not run because T1–T4 are incomplete.
+
+### Session: 2026-11-01 — IR-W2-16B-DECODE repair
+**Decision**: Follow pinned `tsf.h:964,1000`: divide in f64 by 32767.0 then cast to f32; ignore `sm24`. The design author must amend `design-docs/specs/design-behringer-oss-ports.md:213` to match. Implementation and verification are in progress.
+
+**Implementation**: T1–T4 delivered. All owned Rust files are below 1000 lines; maximum 227. Sample FNV is `a3a7a827a2d9075f`. Formal review and integration remain downstream.
+
+| Verification command | Exit | Tests passed/run | Complete log |
+| --- | --- | --- | --- |
+| `MUSIC_THINGS_REFS=/Users/taco/gits/tacogips/music-things-refs tools/soundfont-harness/generate_font.sh --work-dir tmp/behringer-oss-ports/bop-16b/harness` | 0 | 1/1 | `tmp/behringer-oss-ports/bop-16b/logs/check-agent-final-generate.log` |
+| `cargo nextest run -p music-things-soundfont --test font_parity` | 0 | 2/2 | `tmp/behringer-oss-ports/bop-16b/logs/check-agent-final-font.log` |
+| `cargo clippy -p music-things-soundfont --all-targets -- -D warnings` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-16b/logs/check-agent-final-clippy.log` |
+| `find crates/soundfont/src/font crates/soundfont/tests/font_parity.rs crates/soundfont/tests/common/sf2_builder.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-16b/logs/check-agent-final-rustfmt.log` |
+| `cargo build -p music-things-soundfont --target wasm32-unknown-unknown` | 0 | 0/0 | `tmp/behringer-oss-ports/bop-16b/logs/check-agent-final-wasm.log` |
+| `cargo nextest run -p music-things-soundfont --test midi_parity` | 0 | 6/6 | `tmp/behringer-oss-ports/bop-16b/logs/check-agent-final-midi.log` |
+
+Cargo commands used `CARGO_TERM_QUIET=true`, `NEXTEST_STATUS_LEVEL=fail`, `NEXTEST_FAILURE_OUTPUT=immediate-final`, `NEXTEST_HIDE_PROGRESS_BAR=1` and plan-local `CARGO_TARGET_DIR`.

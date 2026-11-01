@@ -117,14 +117,77 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 
 ## Completion Criteria
 
-- [ ] All 8 plugins of lines 89-96 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-13/logs/`.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] All 8 plugins of lines 89-96 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-13/logs/`.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-11-01 — implementation in progress
+**Plugins and measured maximum absolute error**: curve (Libm, 0), Dark (Libm, 0), DarkNoise (Libm, 0), DCVoltage (Exact, 0), DeBess (Libm, 0), Deckwrecka (Libm, 0), DeEss (Libm, 5.1315766e-8), DeHiss (Libm, 0). Measurement: `tmp/behringer-oss-ports/bop-13/logs/measurement.log`. All are registered in list order; measurements and records are provisional pending review.
+
+**Verification** (isolated `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-13/target`; cargo quiet and nextest environment as specified above; shared tree may change):
+
+| Command | Exit | Tests passed/run | Log under `tmp/behringer-oss-ports/bop-13/logs/` |
+|---|---:|---:|---|
+| `cargo nextest run -p music-things-airwindows --test parity_batch1_g12` | 0 | 8/8 | `final3-parity.log` |
+| `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `final3-catalog.log` |
+| `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 101 | 0/0 | `final3-clippy.log` |
+| `find crates/airwindows/src/plugins/batch1/g12 crates/airwindows/tests/parity_batch1_g12.rs -name '*.rs' -print0 \| xargs -0 rustfmt --edition 2021 --check` | 0 | 0/0 | `final3-rustfmt.log` |
+| `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0/0 | `final3-wasm.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g12 -name '*.rs' -exec wc -l {} + \| awk '$2 != "total" && $1 >= 1000')"` | 0 | 0/0 | `final3-lines.log` |
+
+**Blocker**: Clippy reports sibling-owned g01, g08 and g14 files; no g12 diagnostic remains. The sibling owners must resolve their diagnostics before rerunning the package-wide gate. The earlier six-plugin parity attempt failed during concurrent sibling edits (`logs/parity-provisional.log`); the final-source parity run passed.
+
+### Continuation: package Clippy retry
+`CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-13/target CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101; `tmp/behringer-oss-ports/bop-13/logs/continuation-clippy.log` records 19 diagnostics in sibling-owned g01, g06 and g14 files, none in g12. The package gate remains blocked until those owners repair their files. The g12 sources, fixtures and parity test match the previous post-hashes (`logs/continuation-hashes.log`, exit 0); previous focused test results therefore remain applicable to those owned sources on the shared tree.
+
+### Continuation 2: package Clippy retry
+
+The required `CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-13/target CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101; `tmp/behringer-oss-ports/bop-13/logs/continuation2-clippy.log` records 15 diagnostics in sibling-owned g01 and g14, none in g12. The gate remains blocked pending sibling repairs.
+
+### Continuation: current shared-tree verification
+
+The isolated target `tmp/behringer-oss-ports/bop-13/target` was used with the prescribed quiet Cargo and nextest environment. `recheck-parity.log` passed 8/8; `recheck-catalog.log` passed 4/4; `recheck-rustfmt.log`, `recheck-wasm.log`, and `recheck-lines.log` exited 0. The required package-wide Clippy command exited 101 (`logs/recheck-clippy.log`), with 27 diagnostics in sibling-owned g01, g03, g11 and g14 files and none in g12. The package gate remains blocked pending those owners' repairs and a fresh rerun. These results were collected on the moving shared tree.
+
+### Continuation: sibling gate retry
+
+`CARGO_TARGET_DIR=tmp/behringer-oss-ports/bop-13/target CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 101. `tmp/behringer-oss-ports/bop-13/logs/continuation3-clippy-retry.log` contains 23 diagnostics in sibling-owned g11 files, none in g12. The package gate requires sibling repair and a fresh rerun. The first retry log is preserved as `logs/continuation3-clippy.log`; its shell exit capture failed because `status` is read-only in zsh.
+
+### Continuation: current verification
+
+All six required commands passed on the shared tree using `CARGO_TARGET_DIR=target/bop-13-current`, `CARGO_TERM_QUIET=true`, `NEXTEST_STATUS_LEVEL=fail`, `NEXTEST_FAILURE_OUTPUT=immediate-final`, and `NEXTEST_HIDE_PROGRESS_BAR=1`. The prior sibling Clippy blocker is cleared for this run. The shared tree may change before integration.
+
+| Command | Exit | Passed/run | Log under `tmp/behringer-oss-ports/bop-13/logs/` |
+|---|---:|---:|---|
+| `cargo nextest run -p music-things-airwindows --test parity_batch1_g12` | 0 | 8/8 | `agent-current-parity.log` |
+| `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `agent-current-catalog.log` |
+| `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 0 | 0/0 | `agent-current-clippy.log` |
+| `find crates/airwindows/src/plugins/batch1/g12 crates/airwindows/tests/parity_batch1_g12.rs -name '*.rs' -print0 \| xargs -0 rustfmt --edition 2021 --check` | 0 | 0/0 | `agent-current-rustfmt.log` |
+| `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0/0 | `agent-current-wasm.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g12 -name '*.rs' -exec wc -l {} + \| awk '$2 != "total" && $1 >= 1000')"` | 0 | 0/0 | `agent-current-lines.log` |
+
+Formal review and integrated-tree verification remain downstream.
+
+### Review revision: reset preserves parameters
+
+Addressed `bop13-F1-reset-keeps-params`: Dark, DarkNoise, DCVoltage, DeBess, Deckwrecka, DeEss and DeHiss retain parameters through reset; curve has no parameters and continues to reset its DSP state. DarkNoise clears its boxed buffers in place. All eight parity tests exercise parameter preservation. Pre-fix DCVoltage regression failed as expected (`logs/review-reset-negative.log`, exit 100). Protected fixture and framework hashes match (`logs/review-final-protected.log`, exit 0). The initial repair introduced invalid curve field references; the corrected source supersedes the failed `review-fix-*` logs.
+
+Final verification used `CARGO_TARGET_DIR=target/bop-13-review-fix CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1` on the shared tree:
+
+| Command | Exit | Passed/run | Log under `tmp/behringer-oss-ports/bop-13/logs/` |
+|---|---:|---:|---|
+| `cargo nextest run -p music-things-airwindows --test parity_batch1_g12` | 0 | 8/8 | `review-final-parity.log` |
+| `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` | 0 | 4/4 | `review-final-catalog.log` |
+| `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` | 0 | 0/0 | `review-final-clippy.log` |
+| `find crates/airwindows/src/plugins/batch1/g12 crates/airwindows/tests/parity_batch1_g12.rs -name '*.rs' -print0 \| xargs -0 rustfmt --edition 2021 --check` | 0 | 0/0 | `review-final-rustfmt.log` |
+| `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` | 0 | 0/0 | `review-final-wasm.log` |
+| `test -z "$(find crates/airwindows/src/plugins/batch1/g12 -name '*.rs' -exec wc -l {} + \| awk '$2 != "total" && $1 >= 1000')"` | 0 | 0/0 | `review-final-lines.log` |
+
+Independent review and combined-tree verification remain downstream.

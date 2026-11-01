@@ -1,6 +1,6 @@
 # Behringer OSS Ports 00: Workspace Scaffold and Shared Test Contracts
 
-**Status**: Ready
+**Status**: In Progress
 **Plan ID**: bop-00
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md (Global rules; A Parity method/Stimulus; C Parity; Plans table)
 **Depends On**: none (wave W1)
@@ -165,14 +165,31 @@ Concrete repository-relative paths (no globs). A directory entry owns every file
 
 ## Completion Criteria
 
-- [ ] D1-D4 files exist with the exact public names above.
-- [ ] Checksum constants in both Rust tests equal the C output (verification 1 log cited).
-- [ ] Verifications 2-6 exit 0, with logs under `tmp/behringer-oss-ports/bop-00/logs/`.
-- [ ] Root `Cargo.toml` is unchanged (`git diff --quiet Cargo.toml`).
-- [ ] Progress Log updated with the command, exit status, tests run/passed and log path.
+- [x] D1-D4 files exist with the exact public names above.
+- [x] Checksum constants in both Rust tests equal the C output (verification 1 log cited).
+- [x] Verifications 2-6 exit 0, with logs under `tmp/behringer-oss-ports/bop-00/logs/`.
+- [x] Root `Cargo.toml` is unchanged (`git diff --quiet Cargo.toml`).
+- [x] Progress Log updated with the command, exit status, tests run/passed and log path.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+### Session: 2026-10-31 — implementation
+**Tasks Completed**: D1–D4 scaffold and shared contracts. Formal review and finalization remain downstream.
+**Checks**: Each command exited 0; non-test checks ran 0 tests.
+
+| Command | Tests run/passed | Log |
+|---|---:|---|
+| `clang -std=c99 -O1 -ffp-contract=off -fno-fast-math -fno-builtin -o tmp/behringer-oss-ports/bop-00/stimulus_check tools/common/stimulus_check.c && tmp/behringer-oss-ports/bop-00/stimulus_check` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/stimulus.log` |
+| `CARGO_TERM_QUIET=true cargo build --workspace` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/build.log` |
+| `git diff --stat Cargo.lock` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/lock-stat.log` |
+| `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows -p music-things-soundfont -p music-things-pitch` | 4/4 | `tmp/behringer-oss-ports/bop-00/logs/nextest.log` |
+| `CARGO_TERM_QUIET=true cargo build --workspace --target wasm32-unknown-unknown` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/wasm.log` |
+| `CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows -p music-things-soundfont -p music-things-pitch --all-targets -- -D warnings` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/clippy.log` |
+| `find crates/airwindows crates/soundfont crates/pitch -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/rustfmt.log` |
+| `git diff --quiet Cargo.toml` | 0/0 | `tmp/behringer-oss-ports/bop-00/logs/root-manifest.log` |
+
+**Notes**: Initial build before Rust files existed failed; see `logs/build-before-rust.log`. The final build passed. Reference checksums are in `logs/stimulus.log`.
