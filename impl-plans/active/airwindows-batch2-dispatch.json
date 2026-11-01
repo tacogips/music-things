@@ -1,0 +1,1129 @@
+{
+  "taskId": "airwindows-batch2",
+  "workflowMode": "issue-resolution",
+  "workflowExecutionId": "opus-terra-design-and-implement-review-loop-session-627",
+  "implementationBranch": "wf/airwindows-batch2",
+  "baseBranch": "wf/airwindows-batch2",
+  "remote": "origin",
+  "originalHead": "d1199ca4416c2aefe25f5fb80930893ffa843b97",
+  "evidenceRoot": "tmp/airwindows-batch2",
+  "designDocPaths": [
+    "design-docs/specs/design-airwindows-batch2.md",
+    "design-docs/user-qa/pending-airwindows-batch2.md",
+    "design-docs/specs/design-behringer-oss-ports.md"
+  ],
+  "commonContract": "impl-plans/active/airwindows-batch2-common.md",
+  "acceptedPlanPaths": [
+    "impl-plans/active/airwindows-batch2-common.md",
+    "impl-plans/active/airwindows-batch2-00-scaffold.md",
+    "impl-plans/active/airwindows-batch2-n01-g01.md",
+    "impl-plans/active/airwindows-batch2-n02-g02.md",
+    "impl-plans/active/airwindows-batch2-n03-g05.md",
+    "impl-plans/active/airwindows-batch2-n04-g07.md",
+    "impl-plans/active/airwindows-batch2-n05-g08.md",
+    "impl-plans/active/airwindows-batch2-n06-g10.md",
+    "impl-plans/active/airwindows-batch2-n07-g11.md",
+    "impl-plans/active/airwindows-batch2-n08-g12.md",
+    "impl-plans/active/airwindows-batch2-n09-g13.md",
+    "impl-plans/active/airwindows-batch2-n10-g15-g18.md",
+    "impl-plans/active/airwindows-batch2-n11-g19-g21.md",
+    "impl-plans/active/airwindows-batch2-n12-g23-g25-g27-g29.md",
+    "impl-plans/active/airwindows-batch2-n13-g31.md",
+    "impl-plans/active/airwindows-batch2-n14-g32.md",
+    "impl-plans/active/airwindows-batch2-n15-g34.md",
+    "impl-plans/active/airwindows-batch2-o-energy-g03.md",
+    "impl-plans/active/airwindows-batch2-o-energy2-g04.md",
+    "impl-plans/active/airwindows-batch2-o-fireamp-g06.md",
+    "impl-plans/active/airwindows-batch2-o-grindamp-g09.md",
+    "impl-plans/active/airwindows-batch2-o-leadamp-g14.md",
+    "impl-plans/active/airwindows-batch2-o-lilamp-g16.md",
+    "impl-plans/active/airwindows-batch2-o-logical4-g17.md",
+    "impl-plans/active/airwindows-batch2-o-midamp-g20.md",
+    "impl-plans/active/airwindows-batch2-o-monitoring-g22.md",
+    "impl-plans/active/airwindows-batch2-o-monitoring3-g24.md",
+    "impl-plans/active/airwindows-batch2-o-mv-g26.md",
+    "impl-plans/active/airwindows-batch2-o-nikola-g28.md",
+    "impl-plans/active/airwindows-batch2-o-nonlinearspace-g30.md",
+    "impl-plans/active/airwindows-batch2-o-pocketverbs-g33.md",
+    "impl-plans/active/airwindows-batch2-99-integration.md"
+  ],
+  "reviewContext": {
+    "issueReference": "workflowInput issue 'Port Airwindows batch 2 (110 plugins, DitherMeTimbers .. Pop2) into music-things-airwindows' (no GitHub number); workflowExecutionId opus-terra-design-and-implement-review-loop-session-627; intake comm-012127; design accepted at comm-012129; plans accepted at comm-012133 (step5-impl-plan-review, reviewDecision accept, S5-M1 resolved)",
+    "userProblem": "music-things-airwindows holds the Airwindows framework and batch 1 (110 plugins, merged at d1199ca). The next 110 plugins of the Behringer KICK/IGNITE bundled Airwindows set (kick-airwindows-set.txt lines 111-220, DitherMeTimbers .. Pop2) are not ported yet. In batch 1 the largest plugins were skipped or stubbed in two consecutive waves (BigAmp left as an unregistered stub, Ditherbox never written).",
+    "requiredOutcomes": [
+      "All 110 plugins on kick-airwindows-set.txt lines 111-220 are ported, registered in batch2 GROUPS (34 groups in kick order) and listed by catalog(); tests/catalog_batch2.rs asserts the exact ordered 110-name slice after DitherMeDiskers.",
+      "Every plugin has a parity test in tests/parity_batch2_gNN.rs against fixtures from the pinned upstream b110fac3991fff7c4655cc2d25d6a3e221f9799c, with class bounds (Libm <= 1e-6) and the measured max-abs recorded.",
+      "tests/fixtures/batch2 totals at most 3,000,000 bytes.",
+      "No .rs file under crates/airwindows/src/plugins/batch2 reaches 1000 lines; the 14 oversized plugins are module directories.",
+      "Final gates: workspace nextest --all-features, clippy -D warnings, fmt --check, wasm32 build. Full nextest is blocked by Q1 until the operator acts."
+    ],
+    "nonGoals": [
+      "No edits to batch1/, batch3/, framework files (lib.rs, effect.rs, params.rs, dither.rs, rand.rs, display.rs, registry.rs, plugins/mod.rs), shared tests (catalog.rs, no_alloc.rs, batch1_complete.rs, fixture_budget.rs, stimulus_checksum.rs), tests/common, generate.sh/driver.cpp/prelude.h, root README, THIRD_PARTY_NOTICES.md, Cargo manifests or Cargo.lock.",
+      "No edits to design-behringer-oss-ports.md, the batch-1 dispatch manifest or design-docs/user-qa/README.md.",
+      "No processDoubleReplacing, chunks or programs.",
+      "ab2-99-integration edits no source; repairs route back to the owning plan."
+    ],
+    "constraints": [
+      "Port only from pinned upstream airwindows @ b110fac3991fff7c4655cc2d25d6a3e221f9799c (MIT), plugins/LinuxVST/src/<Name>/; keep upstream copyright headers; never read Music Tribe AGPL code.",
+      "Port the processReplacing float path including fpd dither, seeded through the existing rand/dither helpers.",
+      "Group plans hold at most 8 plugins; each of the 14 oversized plugins (Proc > 1000 lines) has its own plan and a module directory; every .rs file stays under 1000 lines.",
+      "Every listed plugin must be fully ported, registered and parity-tested; a stub, unregistered module, skipped plugin or ignored/weakened parity test is a plan failure, not a deferral.",
+      "W2 plans never gate on crate-wide clippy, full nextest, cargo fmt --check or wasm32; their gates are cargo check, their own parity tests, own-file rustfmt, the own-file clippy grep, line counts, ENTRY counts, the no-stub grep and the dead_code grep (common section 9). Only ab2-99-integration runs the crate-wide gates.",
+      "Each plan uses CARGO_TERM_QUIET=true and CARGO_TARGET_DIR=tmp/airwindows-batch2/<planId>/target; evidence under tmp/airwindows-batch2/<planId> (gitignored).",
+      "Keep the shared crate compiling: declare a module early with a narrow #[allow(dead_code)], add its ENTRY and remove the allow only when complete; bounded wait on sibling breakage (common sections 5.6 and 8).",
+      "Workers edit only their own writePaths and never run tree-rewriting git commands."
+    ],
+    "designDecisionsAndRationale": [
+      "34 groups in kick-list order (design section 2): every oversized plugin is a singleton group so it gets its own plan and directory while catalog() order stays kick order.",
+      "ab2-00-scaffold pre-creates batch2/mod.rs with all 34 group modules, all 220 fixtures, generate_batch2.sh and catalog_batch2.rs, so no W2 plan touches a shared file (design sections 3, 4 and 6).",
+      "A new generate_batch2.sh instead of editing generate.sh, because generate.sh is hardcoded to batch 1 and must stay byte-stable; shim changes are append-only (design section 4).",
+      "catalog_batch2.rs asserts the exact ordered 110-name slice after DitherMeDiskers, fixture presence and parity coverage, so a stub or skip fails the batch (design section 6).",
+      "Only ab2-99-integration runs crate-wide clippy, full nextest, fmt --check and wasm32, avoiding the batch-1 shared-crate gate deadlock (design section 7).",
+      "PocketVerbs is split into ordered per-reverb-type subtasks and is registered only when every type is ported (design section 3)."
+    ],
+    "intentionalTradeoffs": [
+      "ab2-99 stays Blocked (Q1) for the full-nextest criterion until the operator edits or authorizes edits to tests/batch1_complete.rs and tests/fixture_budget.rs; the filtered nextest is the passing gate meanwhile.",
+      "ab2-00 keeps broad batch2 src and fixture writePaths for harness-escalation follow-ups during W2; those follow-ups should stay within tools/vst-shim and generate_batch2.sh.",
+      "Selector branches the fixtures never reach get only a mode-sweep smoke test (finite output, no panic), not a parity claim.",
+      "Each plan uses its own CARGO_TARGET_DIR under its evidence directory, trading disk space for lock independence across about 30 parallel plans."
+    ],
+    "supportedEdgeCases": [
+      "Batch 3 merged or not: catalog_batch2 locates the 110-name slice after DitherMeDiskers, and batch-3 entries follow Pop2.",
+      "Harness or shim defect found during W2: plugin marked BLOCKED-HARNESS, fix routed to ab2-00 additively, owning plan regenerates only its own group fixtures (common section 10).",
+      "Sibling compile breakage during W2: one retry, then a logged blocker; the plan stays Blocked (sibling <planId>) if it persists at completion.",
+      "Large-state plugins allocate arrays above 4096 elements as Box<[T]> in the constructor; the shared no_alloc test covers process, set_param and reset."
+    ],
+    "outOfScopeEdgeCases": [
+      "processDoubleReplacing, chunks and programs.",
+      "Cross-host libm calibration; the acceptance host is aarch64-apple-darwin.",
+      "Root README totals and THIRD_PARTY_NOTICES.md updates (operator, after merging batches 2 and 3).",
+      "Fixing the shared tests batch1_complete.rs and fixture_budget.rs without the operator's Q1 answer."
+    ],
+    "openQuestions": [
+      "Q1 (design-docs/user-qa/pending-airwindows-batch2.md): shared tests batch1_complete.rs and fixture_budget.rs fail once batch 2 lands; ab2-99 reports Blocked (Q1) until the operator applies or authorizes the minimal edits."
+    ],
+    "residualDesignFindings": [
+      "S3-L1 (low): upstream line counts for Logical4 and NonlinearSpace differ by one from the issue text; no impact.",
+      "S3-L2 (low): the scaffold lacked an own-file clippy gate; added as ab2-00 command 7."
+    ],
+    "residualRisks": [
+      "Q1 open: the ab2-99 full-nextest criterion is blocked until the operator acts.",
+      "Per-plugin pitfall hints in plans are unverified against the pinned sources; the source wins (common section 6).",
+      "Selector branches the fixtures never reach have only mode-sweep smoke coverage and review.",
+      "PocketVerbs is multi-session work; the keep-compiling rule adds overhead but preserves liveness.",
+      "Concurrent batch-3 additive shim edits may conflict textually at merge."
+    ],
+    "sourcePaths": [
+      "design-docs/specs/design-airwindows-batch2.md",
+      "design-docs/user-qa/pending-airwindows-batch2.md",
+      "design-docs/specs/design-behringer-oss-ports.md",
+      "impl-plans/active/airwindows-batch2-common.md",
+      "crates/airwindows/src/plugins/batch2/mod.rs",
+      "crates/airwindows/src/plugins/batch1/g03/beam.rs",
+      "crates/airwindows/src/plugins/batch1/g03/bigamp",
+      "crates/airwindows/tests/parity_batch1_g03.rs",
+      "tools/airwindows-harness/generate.sh",
+      "/Users/taco/gits/tacogips/music-things-refs/airwindows/plugins/LinuxVST/src",
+      "/Users/taco/gits/tacogips/music-things-refs/kick-airwindows-set.txt"
+    ]
+  },
+  "waves": {
+    "W1": ["ab2-00-scaffold"],
+    "W2": ["ab2-n01", "ab2-n02", "ab2-n03", "ab2-n04", "ab2-n05", "ab2-n06", "ab2-n07", "ab2-n08", "ab2-n09", "ab2-n10", "ab2-n11", "ab2-n12", "ab2-n13", "ab2-n14", "ab2-n15", "ab2-o-energy", "ab2-o-energy2", "ab2-o-fireamp", "ab2-o-grindamp", "ab2-o-leadamp", "ab2-o-lilamp", "ab2-o-logical4", "ab2-o-midamp", "ab2-o-monitoring", "ab2-o-monitoring3", "ab2-o-mv", "ab2-o-nikola", "ab2-o-nonlinearspace", "ab2-o-pocketverbs"],
+    "W3": ["ab2-99-integration"]
+  },
+  "portPlanPathRule": "For every W2 plan: writePaths = [crates/airwindows/src/plugins/batch2/<gNN> and crates/airwindows/tests/parity_batch2_<gNN>.rs and crates/airwindows/tests/fixtures/batch2/<gNN> for each owned group, the plan file, target, tmp/airwindows-batch2/<planId>]; sharedPaths = []; artifactRoots = [target, tmp/airwindows-batch2/<planId>]; dependsOn = [ab2-00-scaffold]. Verification = commands 1-7 of common section 9 with the plan's groups (each plan file lists them verbatim) plus the mandatory common gate 7b (no 'dead_code' left in owned group dirs). Development rule (S5-M1): declare 'mod <module>;' early so that cargo check compiles it, add '<module>::ENTRY' only when the plugin is complete, keep the shared crate compiling, and wait on sibling breakage only for a bounded time (common sections 5.6 and 8).",
+  "plans": [
+    {
+      "planId": "ab2-00-scaffold",
+      "planPath": "impl-plans/active/airwindows-batch2-00-scaffold.md",
+      "dependsOn": [],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2",
+        "crates/airwindows/tests/catalog_batch2.rs",
+        "crates/airwindows/tests/fixtures/batch2",
+        "tools/airwindows-harness/generate_batch2.sh",
+        "tools/vst-shim/audioeffectx.h",
+        "tools/vst-shim/audioeffectx.cpp",
+        "impl-plans/active/airwindows-batch2-00-scaffold.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-00-scaffold"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-00-scaffold"
+      ],
+      "acceptanceCriteria": [
+        "batch2/mod.rs declares mod g01..g34 in numeric order and GROUPS = [g01::ENTRIES, ..., g34::ENTRIES]; every gNN/mod.rs has an empty ENTRIES; the crate compiles (cmd 1).",
+        "tools/airwindows-harness/generate_batch2.sh exists, is executable, validates its 110-row table against kick list lines 111-220 and generates all 110 plugins (cmds 2 and 9).",
+        "Shim additions, if any, are appended only in a '// batch 2 additions' block and listed with the plugin that needed them, and the batch-1 g03 regeneration is byte-identical (plan cmd 10); or no shim change was needed (recorded).",
+        "220 fixture files under crates/airwindows/tests/fixtures/batch2, each .f32 exactly 12,096 bytes, total apparent bytes <= 3,000,000 (cmds 3-5).",
+        "tests/catalog_batch2.rs has batch2_fixture_budget, batch2_catalog_exact and batch2_parity_coverage; the budget test passes (cmd 4); the other two fail by design until W2 and are never ignored or softened.",
+        "Own-file rustfmt and own-file clippy gates exit 0 (cmds 6-7); the crate-level nextest diagnostic (plan cmd 8) is recorded with only the allowed failures; only writePaths changed (pre/post hashes)."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-00-scaffold/target cargo check -p music-things-airwindows --all-targets",
+        "MUSIC_THINGS_REFS=/Users/taco/gits/tacogips/music-things-refs tools/airwindows-harness/generate_batch2.sh --work-dir tmp/airwindows-batch2/ab2-00-scaffold/harness --out-root crates/airwindows/tests/fixtures",
+        "test \"$(ls crates/airwindows/tests/fixtures/batch2/g*/*.f32 | wc -l)\" -eq 110 && test \"$(ls crates/airwindows/tests/fixtures/batch2/g*/*.txt | wc -l)\" -eq 110",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-00-scaffold/target cargo nextest run -p music-things-airwindows --test catalog_batch2 -E 'test(batch2_fixture_budget)'",
+        "test \"$(find crates/airwindows/tests/fixtures/batch2 -type f -exec stat -f %z {} + | awk '{s+=$1} END {print s+0}')\" -le 3000000",
+        "rustfmt --edition 2021 --check crates/airwindows/src/plugins/batch2/mod.rs crates/airwindows/src/plugins/batch2/g*/mod.rs crates/airwindows/tests/catalog_batch2.rs",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-00-scaffold/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/|tests/catalog_batch2\\.rs')\"",
+        "bash -n tools/airwindows-harness/generate_batch2.sh && test -x tools/airwindows-harness/generate_batch2.sh"
+      ]
+    },
+    {
+      "planId": "ab2-n01",
+      "planPath": "impl-plans/active/airwindows-batch2-n01-g01.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g01",
+        "crates/airwindows/tests/parity_batch2_g01.rs",
+        "crates/airwindows/tests/fixtures/batch2/g01",
+        "impl-plans/active/airwindows-batch2-n01-g01.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n01"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n01"],
+      "acceptanceCriteria": [
+        "All 8 g01 plugins (DitherMeTimbers, Doublelay, DoublePaul, Drive, DrumSlam, DubCenter, Dubly, DubSub) are fully ported, registered with one ENTRY each in g01/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n01/logs; the no_alloc/catalog diagnostic shows no failure naming a g01 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n01/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n01/target cargo nextest run -p music-things-airwindows --test parity_batch2_g01",
+        "find crates/airwindows/src/plugins/batch2/g01 crates/airwindows/tests/parity_batch2_g01.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n01/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g01/|tests/parity_batch2_g01\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g01 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g01/mod.rs)\" -eq 8",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g01 crates/airwindows/tests/parity_batch2_g01.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g01"
+      ]
+    },
+    {
+      "planId": "ab2-n02",
+      "planPath": "impl-plans/active/airwindows-batch2-n02-g02.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g02",
+        "crates/airwindows/tests/parity_batch2_g02.rs",
+        "crates/airwindows/tests/fixtures/batch2/g02",
+        "impl-plans/active/airwindows-batch2-n02-g02.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n02"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n02"],
+      "acceptanceCriteria": [
+        "All 7 g02 plugins (DustBunny, Dynamics, Dyno, Edge, EdIsDim, Elation, ElectroHat) are fully ported, registered with one ENTRY each in g02/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n02/logs; the no_alloc/catalog diagnostic shows no failure naming a g02 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n02/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n02/target cargo nextest run -p music-things-airwindows --test parity_batch2_g02",
+        "find crates/airwindows/src/plugins/batch2/g02 crates/airwindows/tests/parity_batch2_g02.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n02/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g02/|tests/parity_batch2_g02\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g02 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g02/mod.rs)\" -eq 7",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g02 crates/airwindows/tests/parity_batch2_g02.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g02"
+      ]
+    },
+    {
+      "planId": "ab2-n03",
+      "planPath": "impl-plans/active/airwindows-batch2-n03-g05.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g05",
+        "crates/airwindows/tests/parity_batch2_g05.rs",
+        "crates/airwindows/tests/fixtures/batch2/g05",
+        "impl-plans/active/airwindows-batch2-n03-g05.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n03"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n03"],
+      "acceptanceCriteria": [
+        "All 6 g05 plugins (Ensemble, EQ, EveryTrim, Exciter, Facet, FathomFive) are fully ported, registered with one ENTRY each in g05/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n03/logs; the no_alloc/catalog diagnostic shows no failure naming a g05 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n03/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n03/target cargo nextest run -p music-things-airwindows --test parity_batch2_g05",
+        "find crates/airwindows/src/plugins/batch2/g05 crates/airwindows/tests/parity_batch2_g05.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n03/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g05/|tests/parity_batch2_g05\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g05 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g05/mod.rs)\" -eq 6",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g05 crates/airwindows/tests/parity_batch2_g05.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g05"
+      ]
+    },
+    {
+      "planId": "ab2-n04",
+      "planPath": "impl-plans/active/airwindows-batch2-n04-g07.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g07",
+        "crates/airwindows/tests/parity_batch2_g07.rs",
+        "crates/airwindows/tests/fixtures/batch2/g07",
+        "impl-plans/active/airwindows-batch2-n04-g07.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n04"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n04"],
+      "acceptanceCriteria": [
+        "All 5 g07 plugins (Flipity, Floor, Flutter, Focus, Fracture) are fully ported, registered with one ENTRY each in g07/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n04/logs; the no_alloc/catalog diagnostic shows no failure naming a g07 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n04/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n04/target cargo nextest run -p music-things-airwindows --test parity_batch2_g07",
+        "find crates/airwindows/src/plugins/batch2/g07 crates/airwindows/tests/parity_batch2_g07.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n04/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g07/|tests/parity_batch2_g07\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g07 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g07/mod.rs)\" -eq 5",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g07 crates/airwindows/tests/parity_batch2_g07.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g07"
+      ]
+    },
+    {
+      "planId": "ab2-n05",
+      "planPath": "impl-plans/active/airwindows-batch2-n05-g08.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g08",
+        "crates/airwindows/tests/parity_batch2_g08.rs",
+        "crates/airwindows/tests/fixtures/batch2/g08",
+        "impl-plans/active/airwindows-batch2-n05-g08.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n05"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n05"],
+      "acceptanceCriteria": [
+        "All 5 g08 plugins (FromTape, Galactic, Gatelope, GlitchShifter, Golem) are fully ported, registered with one ENTRY each in g08/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n05/logs; the no_alloc/catalog diagnostic shows no failure naming a g08 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n05/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n05/target cargo nextest run -p music-things-airwindows --test parity_batch2_g08",
+        "find crates/airwindows/src/plugins/batch2/g08 crates/airwindows/tests/parity_batch2_g08.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n05/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g08/|tests/parity_batch2_g08\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g08 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g08/mod.rs)\" -eq 5",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g08 crates/airwindows/tests/parity_batch2_g08.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g08"
+      ]
+    },
+    {
+      "planId": "ab2-n06",
+      "planPath": "impl-plans/active/airwindows-batch2-n06-g10.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g10",
+        "crates/airwindows/tests/parity_batch2_g10.rs",
+        "crates/airwindows/tests/fixtures/batch2/g10",
+        "impl-plans/active/airwindows-batch2-n06-g10.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n06"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n06"],
+      "acceptanceCriteria": [
+        "All 7 g10 plugins (Gringer, GrooveWear, GuitarConditioner, HardVacuum, Hermepass, HermeTrim, HighGlossDither) are fully ported, registered with one ENTRY each in g10/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n06/logs; the no_alloc/catalog diagnostic shows no failure naming a g10 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n06/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n06/target cargo nextest run -p music-things-airwindows --test parity_batch2_g10",
+        "find crates/airwindows/src/plugins/batch2/g10 crates/airwindows/tests/parity_batch2_g10.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n06/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g10/|tests/parity_batch2_g10\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g10 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g10/mod.rs)\" -eq 7",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g10 crates/airwindows/tests/parity_batch2_g10.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g10"
+      ]
+    },
+    {
+      "planId": "ab2-n07",
+      "planPath": "impl-plans/active/airwindows-batch2-n07-g11.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g11",
+        "crates/airwindows/tests/parity_batch2_g11.rs",
+        "crates/airwindows/tests/fixtures/batch2/g11",
+        "impl-plans/active/airwindows-batch2-n07-g11.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n07"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n07"],
+      "acceptanceCriteria": [
+        "All 7 g11 plugins (HighImpact, Highpass, Highpass2, Holt, Holt2, Hombre, Hull) are fully ported, registered with one ENTRY each in g11/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n07/logs; the no_alloc/catalog diagnostic shows no failure naming a g11 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n07/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n07/target cargo nextest run -p music-things-airwindows --test parity_batch2_g11",
+        "find crates/airwindows/src/plugins/batch2/g11 crates/airwindows/tests/parity_batch2_g11.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n07/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g11/|tests/parity_batch2_g11\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g11 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g11/mod.rs)\" -eq 7",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g11 crates/airwindows/tests/parity_batch2_g11.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g11"
+      ]
+    },
+    {
+      "planId": "ab2-n08",
+      "planPath": "impl-plans/active/airwindows-batch2-n08-g12.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g12",
+        "crates/airwindows/tests/parity_batch2_g12.rs",
+        "crates/airwindows/tests/fixtures/batch2/g12",
+        "impl-plans/active/airwindows-batch2-n08-g12.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n08"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n08"],
+      "acceptanceCriteria": [
+        "All 6 g12 plugins (Hype, Hypersonic, HypersonX, Infinity, Infinity2, Infrasonic) are fully ported, registered with one ENTRY each in g12/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n08/logs; the no_alloc/catalog diagnostic shows no failure naming a g12 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n08/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n08/target cargo nextest run -p music-things-airwindows --test parity_batch2_g12",
+        "find crates/airwindows/src/plugins/batch2/g12 crates/airwindows/tests/parity_batch2_g12.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n08/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g12/|tests/parity_batch2_g12\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g12 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g12/mod.rs)\" -eq 6",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g12 crates/airwindows/tests/parity_batch2_g12.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g12"
+      ]
+    },
+    {
+      "planId": "ab2-n09",
+      "planPath": "impl-plans/active/airwindows-batch2-n09-g13.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g13",
+        "crates/airwindows/tests/parity_batch2_g13.rs",
+        "crates/airwindows/tests/fixtures/batch2/g13",
+        "impl-plans/active/airwindows-batch2-n09-g13.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n09"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n09"],
+      "acceptanceCriteria": [
+        "All 6 g13 plugins (Interstage, IronOxide5, IronOxideClassic, IronOxideClassic2, Isolator, Isolator2) are fully ported, registered with one ENTRY each in g13/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n09/logs; the no_alloc/catalog diagnostic shows no failure naming a g13 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n09/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n09/target cargo nextest run -p music-things-airwindows --test parity_batch2_g13",
+        "find crates/airwindows/src/plugins/batch2/g13 crates/airwindows/tests/parity_batch2_g13.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n09/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g13/|tests/parity_batch2_g13\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g13 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g13/mod.rs)\" -eq 6",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g13 crates/airwindows/tests/parity_batch2_g13.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g13"
+      ]
+    },
+    {
+      "planId": "ab2-n10",
+      "planPath": "impl-plans/active/airwindows-batch2-n10-g15-g18.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g15",
+        "crates/airwindows/src/plugins/batch2/g18",
+        "crates/airwindows/tests/parity_batch2_g15.rs",
+        "crates/airwindows/tests/parity_batch2_g18.rs",
+        "crates/airwindows/tests/fixtures/batch2/g15",
+        "crates/airwindows/tests/fixtures/batch2/g18",
+        "impl-plans/active/airwindows-batch2-n10-g15-g18.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n10"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n10"],
+      "acceptanceCriteria": [
+        "All 6 plugins are fully ported, registered and pass parity: g15 LeftoMono (1 ENTRY) and g18 Loud, Lowpass, Lowpass2, LRFlipTimer, Luxor (5 ENTRY lines in kick order); a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n10/logs; the no_alloc/catalog diagnostic shows no failure naming a g15 or g18 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n10/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n10/target cargo nextest run -p music-things-airwindows --test parity_batch2_g15 --test parity_batch2_g18",
+        "find crates/airwindows/src/plugins/batch2/g15 crates/airwindows/src/plugins/batch2/g18 crates/airwindows/tests/parity_batch2_g15.rs crates/airwindows/tests/parity_batch2_g18.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n10/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/(g15|g18)/|tests/parity_batch2_(g15|g18)\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g15 crates/airwindows/src/plugins/batch2/g18 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g15/mod.rs)\" -eq 1 && test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g18/mod.rs)\" -eq 5",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g15 crates/airwindows/src/plugins/batch2/g18 crates/airwindows/tests/parity_batch2_g15.rs crates/airwindows/tests/parity_batch2_g18.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g15 crates/airwindows/src/plugins/batch2/g18"
+      ]
+    },
+    {
+      "planId": "ab2-n11",
+      "planPath": "impl-plans/active/airwindows-batch2-n11-g19-g21.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g19",
+        "crates/airwindows/src/plugins/batch2/g21",
+        "crates/airwindows/tests/parity_batch2_g19.rs",
+        "crates/airwindows/tests/parity_batch2_g21.rs",
+        "crates/airwindows/tests/fixtures/batch2/g19",
+        "crates/airwindows/tests/fixtures/batch2/g21",
+        "impl-plans/active/airwindows-batch2-n11-g19-g21.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n11"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n11"],
+      "acceptanceCriteria": [
+        "All 6 plugins are fully ported, registered and pass parity: g19 MackEQ, Mackity, MatrixVerb, Melt (4 ENTRY lines) and g21 MidSide, Mojo (2 ENTRY lines); a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n11/logs; the no_alloc/catalog diagnostic shows no failure naming a g19 or g21 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n11/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n11/target cargo nextest run -p music-things-airwindows --test parity_batch2_g19 --test parity_batch2_g21",
+        "find crates/airwindows/src/plugins/batch2/g19 crates/airwindows/src/plugins/batch2/g21 crates/airwindows/tests/parity_batch2_g19.rs crates/airwindows/tests/parity_batch2_g21.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n11/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/(g19|g21)/|tests/parity_batch2_(g19|g21)\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g19 crates/airwindows/src/plugins/batch2/g21 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g19/mod.rs)\" -eq 4 && test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g21/mod.rs)\" -eq 2",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g19 crates/airwindows/src/plugins/batch2/g21 crates/airwindows/tests/parity_batch2_g19.rs crates/airwindows/tests/parity_batch2_g21.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g19 crates/airwindows/src/plugins/batch2/g21"
+      ]
+    },
+    {
+      "planId": "ab2-n12",
+      "planPath": "impl-plans/active/airwindows-batch2-n12-g23-g25-g27-g29.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g23",
+        "crates/airwindows/src/plugins/batch2/g25",
+        "crates/airwindows/src/plugins/batch2/g27",
+        "crates/airwindows/src/plugins/batch2/g29",
+        "crates/airwindows/tests/parity_batch2_g23.rs",
+        "crates/airwindows/tests/parity_batch2_g25.rs",
+        "crates/airwindows/tests/parity_batch2_g27.rs",
+        "crates/airwindows/tests/parity_batch2_g29.rs",
+        "crates/airwindows/tests/fixtures/batch2/g23",
+        "crates/airwindows/tests/fixtures/batch2/g25",
+        "crates/airwindows/tests/fixtures/batch2/g27",
+        "crates/airwindows/tests/fixtures/batch2/g29",
+        "impl-plans/active/airwindows-batch2-n12-g23-g25-g27-g29.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n12"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n12"],
+      "acceptanceCriteria": [
+        "All 8 plugins are fully ported, registered and pass parity: g23 Monitoring2 (1), g25 MoNoam, MultiBandDistortion (2), g27 NaturalizeDither, NCSeventeen, Neverland (3), g29 NodeDither, Noise (2); a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n12/logs; the no_alloc/catalog diagnostic shows no failure naming a g23, g25, g27 or g29 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n12/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n12/target cargo nextest run -p music-things-airwindows --test parity_batch2_g23 --test parity_batch2_g25 --test parity_batch2_g27 --test parity_batch2_g29",
+        "find crates/airwindows/src/plugins/batch2/g23 crates/airwindows/src/plugins/batch2/g25 crates/airwindows/src/plugins/batch2/g27 crates/airwindows/src/plugins/batch2/g29 crates/airwindows/tests/parity_batch2_g23.rs crates/airwindows/tests/parity_batch2_g25.rs crates/airwindows/tests/parity_batch2_g27.rs crates/airwindows/tests/parity_batch2_g29.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n12/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/(g23|g25|g27|g29)/|tests/parity_batch2_(g23|g25|g27|g29)\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g23 crates/airwindows/src/plugins/batch2/g25 crates/airwindows/src/plugins/batch2/g27 crates/airwindows/src/plugins/batch2/g29 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g23/mod.rs)\" -eq 1 && test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g25/mod.rs)\" -eq 2 && test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g27/mod.rs)\" -eq 3 && test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g29/mod.rs)\" -eq 2",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g23 crates/airwindows/src/plugins/batch2/g25 crates/airwindows/src/plugins/batch2/g27 crates/airwindows/src/plugins/batch2/g29 crates/airwindows/tests/parity_batch2_g23.rs crates/airwindows/tests/parity_batch2_g25.rs crates/airwindows/tests/parity_batch2_g27.rs crates/airwindows/tests/parity_batch2_g29.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g23 crates/airwindows/src/plugins/batch2/g25 crates/airwindows/src/plugins/batch2/g27 crates/airwindows/src/plugins/batch2/g29"
+      ]
+    },
+    {
+      "planId": "ab2-n13",
+      "planPath": "impl-plans/active/airwindows-batch2-n13-g31.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g31",
+        "crates/airwindows/tests/parity_batch2_g31.rs",
+        "crates/airwindows/tests/fixtures/batch2/g31",
+        "impl-plans/active/airwindows-batch2-n13-g31.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n13"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n13"],
+      "acceptanceCriteria": [
+        "All 6 g31 plugins (NotJustAnotherCD, NotJustAnotherDither, OneCornerClip, Pafnuty, PaulDither, PaulWide) are fully ported, registered with one ENTRY each in g31/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n13/logs; the no_alloc/catalog diagnostic shows no failure naming a g31 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n13/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n13/target cargo nextest run -p music-things-airwindows --test parity_batch2_g31",
+        "find crates/airwindows/src/plugins/batch2/g31 crates/airwindows/tests/parity_batch2_g31.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n13/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g31/|tests/parity_batch2_g31\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g31 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g31/mod.rs)\" -eq 6",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g31 crates/airwindows/tests/parity_batch2_g31.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g31"
+      ]
+    },
+    {
+      "planId": "ab2-n14",
+      "planPath": "impl-plans/active/airwindows-batch2-n14-g32.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g32",
+        "crates/airwindows/tests/parity_batch2_g32.rs",
+        "crates/airwindows/tests/fixtures/batch2/g32",
+        "impl-plans/active/airwindows-batch2-n14-g32.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n14"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n14"],
+      "acceptanceCriteria": [
+        "All 6 g32 plugins (PDBuss, PDChannel, PeaksOnly, PhaseNudge, PitchDelay, PitchNasty) are fully ported, registered with one ENTRY each in g32/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n14/logs; the no_alloc/catalog diagnostic shows no failure naming a g32 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n14/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n14/target cargo nextest run -p music-things-airwindows --test parity_batch2_g32",
+        "find crates/airwindows/src/plugins/batch2/g32 crates/airwindows/tests/parity_batch2_g32.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n14/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g32/|tests/parity_batch2_g32\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g32 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g32/mod.rs)\" -eq 6",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g32 crates/airwindows/tests/parity_batch2_g32.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g32"
+      ]
+    },
+    {
+      "planId": "ab2-n15",
+      "planPath": "impl-plans/active/airwindows-batch2-n15-g34.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g34",
+        "crates/airwindows/tests/parity_batch2_g34.rs",
+        "crates/airwindows/tests/fixtures/batch2/g34",
+        "impl-plans/active/airwindows-batch2-n15-g34.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-n15"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n15"],
+      "acceptanceCriteria": [
+        "All 7 g34 plugins (Pockey, Pockey2, Podcast, PodcastDeluxe, Point, Pop, Pop2) are fully ported, registered with one ENTRY each in g34/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
+        "Each ParityRecord and module header records the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-n15/logs; the no_alloc/catalog diagnostic shows no failure naming a g34 plugin; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n15/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n15/target cargo nextest run -p music-things-airwindows --test parity_batch2_g34",
+        "find crates/airwindows/src/plugins/batch2/g34 crates/airwindows/tests/parity_batch2_g34.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-n15/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g34/|tests/parity_batch2_g34\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g34 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g34/mod.rs)\" -eq 7",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g34 crates/airwindows/tests/parity_batch2_g34.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g34"
+      ]
+    },
+    {
+      "planId": "ab2-o-energy",
+      "planPath": "impl-plans/active/airwindows-batch2-o-energy-g03.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g03",
+        "crates/airwindows/tests/parity_batch2_g03.rs",
+        "crates/airwindows/tests/fixtures/batch2/g03",
+        "impl-plans/active/airwindows-batch2-o-energy-g03.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-energy"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-energy"],
+      "acceptanceCriteria": [
+        "Energy (oversized, 1448-line upstream Proc) is fully ported as module directory g03/energy/ with submodules, registered with exactly one ENTRY in g03/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-energy/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-energy/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-energy/target cargo nextest run -p music-things-airwindows --test parity_batch2_g03",
+        "find crates/airwindows/src/plugins/batch2/g03 crates/airwindows/tests/parity_batch2_g03.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-energy/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g03/|tests/parity_batch2_g03\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g03 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g03/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g03/energy/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g03 crates/airwindows/tests/parity_batch2_g03.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g03"
+      ]
+    },
+    {
+      "planId": "ab2-o-energy2",
+      "planPath": "impl-plans/active/airwindows-batch2-o-energy2-g04.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g04",
+        "crates/airwindows/tests/parity_batch2_g04.rs",
+        "crates/airwindows/tests/fixtures/batch2/g04",
+        "impl-plans/active/airwindows-batch2-o-energy2-g04.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-energy2"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-energy2"],
+      "acceptanceCriteria": [
+        "Energy2 (oversized, 1292-line upstream Proc) is fully ported as module directory g04/energy2/ with submodules, registered with exactly one ENTRY in g04/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-energy2/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-energy2/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-energy2/target cargo nextest run -p music-things-airwindows --test parity_batch2_g04",
+        "find crates/airwindows/src/plugins/batch2/g04 crates/airwindows/tests/parity_batch2_g04.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-energy2/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g04/|tests/parity_batch2_g04\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g04 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g04/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g04/energy2/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g04 crates/airwindows/tests/parity_batch2_g04.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g04"
+      ]
+    },
+    {
+      "planId": "ab2-o-fireamp",
+      "planPath": "impl-plans/active/airwindows-batch2-o-fireamp-g06.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g06",
+        "crates/airwindows/tests/parity_batch2_g06.rs",
+        "crates/airwindows/tests/fixtures/batch2/g06",
+        "impl-plans/active/airwindows-batch2-o-fireamp-g06.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-fireamp"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-fireamp"],
+      "acceptanceCriteria": [
+        "FireAmp (oversized, 1707-line upstream Proc) is fully ported as module directory g06/fireamp/ with submodules, registered with exactly one ENTRY in g06/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-fireamp/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-fireamp/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-fireamp/target cargo nextest run -p music-things-airwindows --test parity_batch2_g06",
+        "find crates/airwindows/src/plugins/batch2/g06 crates/airwindows/tests/parity_batch2_g06.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-fireamp/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g06/|tests/parity_batch2_g06\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g06 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g06/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g06/fireamp/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g06 crates/airwindows/tests/parity_batch2_g06.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g06"
+      ]
+    },
+    {
+      "planId": "ab2-o-grindamp",
+      "planPath": "impl-plans/active/airwindows-batch2-o-grindamp-g09.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g09",
+        "crates/airwindows/tests/parity_batch2_g09.rs",
+        "crates/airwindows/tests/fixtures/batch2/g09",
+        "impl-plans/active/airwindows-batch2-o-grindamp-g09.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-grindamp"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-grindamp"],
+      "acceptanceCriteria": [
+        "GrindAmp (oversized, 1650-line upstream Proc) is fully ported as module directory g09/grindamp/ with submodules, registered with exactly one ENTRY in g09/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-grindamp/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-grindamp/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-grindamp/target cargo nextest run -p music-things-airwindows --test parity_batch2_g09",
+        "find crates/airwindows/src/plugins/batch2/g09 crates/airwindows/tests/parity_batch2_g09.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-grindamp/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g09/|tests/parity_batch2_g09\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g09 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g09/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g09/grindamp/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g09 crates/airwindows/tests/parity_batch2_g09.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g09"
+      ]
+    },
+    {
+      "planId": "ab2-o-leadamp",
+      "planPath": "impl-plans/active/airwindows-batch2-o-leadamp-g14.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g14",
+        "crates/airwindows/tests/parity_batch2_g14.rs",
+        "crates/airwindows/tests/fixtures/batch2/g14",
+        "impl-plans/active/airwindows-batch2-o-leadamp-g14.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-leadamp"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-leadamp"],
+      "acceptanceCriteria": [
+        "LeadAmp (oversized, 1770-line upstream Proc) is fully ported as module directory g14/leadamp/ with submodules, registered with exactly one ENTRY in g14/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-leadamp/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-leadamp/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-leadamp/target cargo nextest run -p music-things-airwindows --test parity_batch2_g14",
+        "find crates/airwindows/src/plugins/batch2/g14 crates/airwindows/tests/parity_batch2_g14.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-leadamp/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g14/|tests/parity_batch2_g14\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g14 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g14/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g14/leadamp/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g14 crates/airwindows/tests/parity_batch2_g14.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g14"
+      ]
+    },
+    {
+      "planId": "ab2-o-lilamp",
+      "planPath": "impl-plans/active/airwindows-batch2-o-lilamp-g16.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g16",
+        "crates/airwindows/tests/parity_batch2_g16.rs",
+        "crates/airwindows/tests/fixtures/batch2/g16",
+        "impl-plans/active/airwindows-batch2-o-lilamp-g16.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-lilamp"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-lilamp"],
+      "acceptanceCriteria": [
+        "LilAmp (oversized, 1204-line upstream Proc) is fully ported as module directory g16/lilamp/ with submodules, registered with exactly one ENTRY in g16/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-lilamp/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-lilamp/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-lilamp/target cargo nextest run -p music-things-airwindows --test parity_batch2_g16",
+        "find crates/airwindows/src/plugins/batch2/g16 crates/airwindows/tests/parity_batch2_g16.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-lilamp/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g16/|tests/parity_batch2_g16\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g16 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g16/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g16/lilamp/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g16 crates/airwindows/tests/parity_batch2_g16.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g16"
+      ]
+    },
+    {
+      "planId": "ab2-o-logical4",
+      "planPath": "impl-plans/active/airwindows-batch2-o-logical4-g17.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g17",
+        "crates/airwindows/tests/parity_batch2_g17.rs",
+        "crates/airwindows/tests/fixtures/batch2/g17",
+        "impl-plans/active/airwindows-batch2-o-logical4-g17.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-logical4"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-logical4"],
+      "acceptanceCriteria": [
+        "Logical4 (oversized, about 1700-line upstream Proc) is fully ported as module directory g17/logical4/ with submodules, registered with exactly one ENTRY in g17/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-logical4/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-logical4/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-logical4/target cargo nextest run -p music-things-airwindows --test parity_batch2_g17",
+        "find crates/airwindows/src/plugins/batch2/g17 crates/airwindows/tests/parity_batch2_g17.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-logical4/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g17/|tests/parity_batch2_g17\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g17 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g17/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g17/logical4/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g17 crates/airwindows/tests/parity_batch2_g17.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g17"
+      ]
+    },
+    {
+      "planId": "ab2-o-midamp",
+      "planPath": "impl-plans/active/airwindows-batch2-o-midamp-g20.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g20",
+        "crates/airwindows/tests/parity_batch2_g20.rs",
+        "crates/airwindows/tests/fixtures/batch2/g20",
+        "impl-plans/active/airwindows-batch2-o-midamp-g20.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-midamp"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-midamp"],
+      "acceptanceCriteria": [
+        "MidAmp (oversized, 1290-line upstream Proc) is fully ported as module directory g20/midamp/ with submodules, registered with exactly one ENTRY in g20/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-midamp/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-midamp/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-midamp/target cargo nextest run -p music-things-airwindows --test parity_batch2_g20",
+        "find crates/airwindows/src/plugins/batch2/g20 crates/airwindows/tests/parity_batch2_g20.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-midamp/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g20/|tests/parity_batch2_g20\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g20 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g20/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g20/midamp/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g20 crates/airwindows/tests/parity_batch2_g20.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g20"
+      ]
+    },
+    {
+      "planId": "ab2-o-monitoring",
+      "planPath": "impl-plans/active/airwindows-batch2-o-monitoring-g22.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g22",
+        "crates/airwindows/tests/parity_batch2_g22.rs",
+        "crates/airwindows/tests/fixtures/batch2/g22",
+        "impl-plans/active/airwindows-batch2-o-monitoring-g22.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-monitoring"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-monitoring"],
+      "acceptanceCriteria": [
+        "Monitoring (oversized, 1042-line upstream Proc) is fully ported as module directory g22/monitoring/ with submodules, registered with exactly one ENTRY in g22/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-monitoring/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-monitoring/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-monitoring/target cargo nextest run -p music-things-airwindows --test parity_batch2_g22",
+        "find crates/airwindows/src/plugins/batch2/g22 crates/airwindows/tests/parity_batch2_g22.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-monitoring/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g22/|tests/parity_batch2_g22\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g22 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g22/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g22/monitoring/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g22 crates/airwindows/tests/parity_batch2_g22.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g22"
+      ]
+    },
+    {
+      "planId": "ab2-o-monitoring3",
+      "planPath": "impl-plans/active/airwindows-batch2-o-monitoring3-g24.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g24",
+        "crates/airwindows/tests/parity_batch2_g24.rs",
+        "crates/airwindows/tests/fixtures/batch2/g24",
+        "impl-plans/active/airwindows-batch2-o-monitoring3-g24.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-monitoring3"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-monitoring3"],
+      "acceptanceCriteria": [
+        "Monitoring3 (oversized, 1050-line upstream Proc) is fully ported as module directory g24/monitoring3/ with submodules, registered with exactly one ENTRY in g24/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-monitoring3/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-monitoring3/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-monitoring3/target cargo nextest run -p music-things-airwindows --test parity_batch2_g24",
+        "find crates/airwindows/src/plugins/batch2/g24 crates/airwindows/tests/parity_batch2_g24.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-monitoring3/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g24/|tests/parity_batch2_g24\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g24 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g24/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g24/monitoring3/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g24 crates/airwindows/tests/parity_batch2_g24.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g24"
+      ]
+    },
+    {
+      "planId": "ab2-o-mv",
+      "planPath": "impl-plans/active/airwindows-batch2-o-mv-g26.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g26",
+        "crates/airwindows/tests/parity_batch2_g26.rs",
+        "crates/airwindows/tests/fixtures/batch2/g26",
+        "impl-plans/active/airwindows-batch2-o-mv-g26.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-mv"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-mv"],
+      "acceptanceCriteria": [
+        "MV (oversized, 1532-line upstream Proc) is fully ported as module directory g26/mv/ with submodules, registered with exactly one ENTRY in g26/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-mv/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-mv/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-mv/target cargo nextest run -p music-things-airwindows --test parity_batch2_g26",
+        "find crates/airwindows/src/plugins/batch2/g26 crates/airwindows/tests/parity_batch2_g26.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-mv/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g26/|tests/parity_batch2_g26\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g26 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g26/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g26/mv/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g26 crates/airwindows/tests/parity_batch2_g26.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g26"
+      ]
+    },
+    {
+      "planId": "ab2-o-nikola",
+      "planPath": "impl-plans/active/airwindows-batch2-o-nikola-g28.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g28",
+        "crates/airwindows/tests/parity_batch2_g28.rs",
+        "crates/airwindows/tests/fixtures/batch2/g28",
+        "impl-plans/active/airwindows-batch2-o-nikola-g28.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-nikola"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-nikola"],
+      "acceptanceCriteria": [
+        "Nikola (oversized, 2047-line upstream Proc) is fully ported as module directory g28/nikola/ with submodules, registered with exactly one ENTRY in g28/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-nikola/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-nikola/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-nikola/target cargo nextest run -p music-things-airwindows --test parity_batch2_g28",
+        "find crates/airwindows/src/plugins/batch2/g28 crates/airwindows/tests/parity_batch2_g28.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-nikola/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g28/|tests/parity_batch2_g28\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g28 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g28/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g28/nikola/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g28 crates/airwindows/tests/parity_batch2_g28.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g28"
+      ]
+    },
+    {
+      "planId": "ab2-o-nonlinearspace",
+      "planPath": "impl-plans/active/airwindows-batch2-o-nonlinearspace-g30.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g30",
+        "crates/airwindows/tests/parity_batch2_g30.rs",
+        "crates/airwindows/tests/fixtures/batch2/g30",
+        "impl-plans/active/airwindows-batch2-o-nonlinearspace-g30.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-nonlinearspace"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-nonlinearspace"],
+      "acceptanceCriteria": [
+        "NonlinearSpace (oversized, about 1448-line upstream Proc) is fully ported as module directory g30/nonlinearspace/ with submodules, registered with exactly one ENTRY in g30/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines; large buffers are Box<[T]> allocated in the constructor; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-nonlinearspace/logs; no temporary dead_code allow remains; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-nonlinearspace/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-nonlinearspace/target cargo nextest run -p music-things-airwindows --test parity_batch2_g30",
+        "find crates/airwindows/src/plugins/batch2/g30 crates/airwindows/tests/parity_batch2_g30.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-nonlinearspace/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g30/|tests/parity_batch2_g30\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g30 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g30/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g30/nonlinearspace/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g30 crates/airwindows/tests/parity_batch2_g30.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g30"
+      ]
+    },
+    {
+      "planId": "ab2-o-pocketverbs",
+      "planPath": "impl-plans/active/airwindows-batch2-o-pocketverbs-g33.md",
+      "dependsOn": ["ab2-00-scaffold"],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch2/g33",
+        "crates/airwindows/tests/parity_batch2_g33.rs",
+        "crates/airwindows/tests/fixtures/batch2/g33",
+        "impl-plans/active/airwindows-batch2-o-pocketverbs-g33.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-o-pocketverbs"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-pocketverbs"],
+      "acceptanceCriteria": [
+        "PocketVerbs (oversized, 18358-line upstream Proc; only the processReplacing half is ported) is fully ported as module directory g33/pocketverbs/ with one submodule per reverb type of the upstream type switch, registered with exactly one ENTRY in g33/mod.rs only after every type is ported, and passes parity for all three renders; a stub, a missing type or an unregistered module is a plan failure, not a deferral.",
+        "No .rs file reaches 1000 lines (a type over 1000 lines is split again); large buffers are Box<[T]> allocated in the constructor; the ParityRecord and module header record the tolerance class and measured max-abs.",
+        "Gates 1-7 and 7b exit 0 with logs under tmp/airwindows-batch2/ab2-o-pocketverbs/logs; no temporary dead_code allow remains; the plan may span several sessions and keeps the shared crate compiling between sessions; only writePaths changed."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-pocketverbs/target cargo check -p music-things-airwindows --all-targets",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-pocketverbs/target cargo nextest run -p music-things-airwindows --test parity_batch2_g33",
+        "find crates/airwindows/src/plugins/batch2/g33 crates/airwindows/tests/parity_batch2_g33.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "test -z \"$(CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-o-pocketverbs/target cargo clippy -p music-things-airwindows --all-targets --message-format short -- -D warnings 2>&1 | grep -E 'src/plugins/batch2/g33/|tests/parity_batch2_g33\\.rs')\"",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2/g33 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(grep -c '::ENTRY' crates/airwindows/src/plugins/batch2/g33/mod.rs)\" -eq 1 && test -f crates/airwindows/src/plugins/batch2/g33/pocketverbs/mod.rs",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore' crates/airwindows/src/plugins/batch2/g33 crates/airwindows/tests/parity_batch2_g33.rs",
+        "! grep -rn 'dead_code' crates/airwindows/src/plugins/batch2/g33"
+      ]
+    },
+    {
+      "planId": "ab2-99-integration",
+      "planPath": "impl-plans/active/airwindows-batch2-99-integration.md",
+      "dependsOn": [
+        "ab2-00-scaffold",
+        "ab2-n01",
+        "ab2-n02",
+        "ab2-n03",
+        "ab2-n04",
+        "ab2-n05",
+        "ab2-n06",
+        "ab2-n07",
+        "ab2-n08",
+        "ab2-n09",
+        "ab2-n10",
+        "ab2-n11",
+        "ab2-n12",
+        "ab2-n13",
+        "ab2-n14",
+        "ab2-n15",
+        "ab2-o-energy",
+        "ab2-o-energy2",
+        "ab2-o-fireamp",
+        "ab2-o-grindamp",
+        "ab2-o-leadamp",
+        "ab2-o-lilamp",
+        "ab2-o-logical4",
+        "ab2-o-midamp",
+        "ab2-o-monitoring",
+        "ab2-o-monitoring3",
+        "ab2-o-mv",
+        "ab2-o-nikola",
+        "ab2-o-nonlinearspace",
+        "ab2-o-pocketverbs"
+      ],
+      "writePaths": [
+        "impl-plans/active/airwindows-batch2-99-integration.md",
+        "target",
+        "tmp/airwindows-batch2/ab2-99-integration"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-99-integration"
+      ],
+      "acceptanceCriteria": [
+        "Commands 2-12 pass on the final combined tree with logs under tmp/airwindows-batch2/ab2-99-integration/logs.",
+        "Command 1 (full workspace nextest) passes, or the plan stays Blocked (Q1) with exactly batch1_complete::batch1_catalog_is_complete and fixture_budget::fixture_budget failing and recorded; any other failure is a finding.",
+        "The parity table records 110 plugins, each within its class bound (Libm/Exact measured max-abs <= 1e-6; Custom only with a non-empty note).",
+        "No source edits by this plan; every finding names its owning plan id per common section 4.",
+        "Progress Log records every command as {command, exitStatus, testsRun, testsPassed, failureCount, outcome, log, notes}."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-99-integration/target cargo nextest run --workspace --all-features",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-99-integration/target cargo nextest run --workspace --all-features -E 'not (binary(=batch1_complete) | binary(=fixture_budget))'",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-99-integration/target cargo clippy --workspace --all-targets --all-features -- -D warnings",
+        "CARGO_TERM_QUIET=true cargo fmt --check",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 CARGO_TARGET_DIR=tmp/airwindows-batch2/ab2-99-integration/target cargo build --workspace --all-features --target wasm32-unknown-unknown",
+        "test -z \"$(find crates/airwindows/src/plugins/batch2 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\"",
+        "test \"$(find crates/airwindows/tests/fixtures/batch2 -type f -exec stat -f %z {} + | awk '{s+=$1} END {print s+0}')\" -le 3000000",
+        "test \"$(ls crates/airwindows/tests/parity_batch2_g*.rs | wc -l)\" -eq 34 && test \"$(cat crates/airwindows/src/plugins/batch2/g*/mod.rs | grep -c '::ENTRY')\" -eq 110",
+        "! grep -rnE 'todo!|unimplemented!|#\\[ignore|dead_code' crates/airwindows/src/plugins/batch2 crates/airwindows/tests/parity_batch2_g*.rs crates/airwindows/tests/catalog_batch2.rs",
+        "test -z \"$(git diff --name-only d1199ca4416c2aefe25f5fb80930893ffa843b97 -- . | grep -vE '^(crates/airwindows/src/plugins/batch2/|crates/airwindows/tests/parity_batch2_g[0-9]{2}\\.rs$|crates/airwindows/tests/catalog_batch2\\.rs$|crates/airwindows/tests/fixtures/batch2/|tools/airwindows-harness/generate_batch2\\.sh$|tools/vst-shim/audioeffectx\\.(h|cpp)$|design-docs/specs/design-airwindows-batch2\\.md$|design-docs/user-qa/pending-airwindows-batch2\\.md$|impl-plans/)')\"",
+        "! git diff d1199ca4416c2aefe25f5fb80930893ffa843b97 -- tools/vst-shim | grep -E '^-[^-]'",
+        "mkdir -p tmp/airwindows-batch2/ab2-99-integration/logs && grep -hE 'name: \"|class:|measured_max_abs' crates/airwindows/tests/parity_batch2_g*.rs > tmp/airwindows-batch2/ab2-99-integration/logs/parity-table.txt"
+      ]
+    }
+  ]
+}
