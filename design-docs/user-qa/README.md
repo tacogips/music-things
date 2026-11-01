@@ -16,6 +16,7 @@ Store questions, pending decisions, and items awaiting user approval.
 ## Current Items
 
 - [pending-behringer-oss-ports-batch1.md](./pending-behringer-oss-ports-batch1.md) - Behringer OSS ports batch 1: non-blocking defaults (display formatting, stft streaming-wrapper verification, tolerance calibration, fixture regeneration)
+- [pending-airwindows-batch3.md](./pending-airwindows-batch3.md) - Airwindows batch 3: edits to fixture_budget.rs and batch1_complete.rs outside the write paths (R1), batch-2 merge resolution, tolerance host
 - [qa-example.md](./qa-example.md) - Example: Database Selection (template example)
 - [pending-example.md](./pending-example.md) - Example: CLI Output Format (template example)
 

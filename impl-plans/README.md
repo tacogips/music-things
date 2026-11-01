@@ -39,7 +39,11 @@ Large features are split into multiple related plans with cross-references.
 
 | Plan | Status | Design Reference | Last Updated |
 |------|--------|------------------|--------------|
-| (No active plans. The batch-1 dispatch manifest stays at `active/behringer-oss-ports-dispatch.json` as the run record.) | - | - | - |
+| [airwindows-batch3-00-bootstrap](active/airwindows-batch3-00-bootstrap.md) (aw-b3-00, W1) | Ready | design-docs/specs/design-airwindows-batch3.md | 2026-11-01 |
+| [airwindows-batch3-01-g01](active/airwindows-batch3-01-g01.md) .. [airwindows-batch3-14-g14](active/airwindows-batch3-14-g14.md) (aw-b3-01..aw-b3-14, W2, one per group g01..g14) | Ready | design-docs/specs/design-airwindows-batch3.md#grouping-by-kick-list-line | 2026-11-01 |
+| [airwindows-batch3-15-integration](active/airwindows-batch3-15-integration.md) (aw-b3-15, W3) | Ready | design-docs/specs/design-airwindows-batch3.md#verification | 2026-11-01 |
+
+Batch-3 dispatch manifest: `active/airwindows-batch3-dispatch.json`. The batch-1 dispatch manifest stays at `active/behringer-oss-ports-dispatch.json` as the run record.
 
 ## Completed Plans
 
