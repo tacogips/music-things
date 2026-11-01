@@ -122,15 +122,48 @@
       "crates/airwindows/src/plugins/batch1/g03/beam.rs",
       "crates/airwindows/src/plugins/batch1/g03/bigamp",
       "crates/airwindows/tests/parity_batch1_g03.rs",
-      "tools/airwindows-harness/generate.sh",
-      "/Users/taco/gits/tacogips/music-things-refs/airwindows/plugins/LinuxVST/src",
-      "/Users/taco/gits/tacogips/music-things-refs/kick-airwindows-set.txt"
-    ]
+      "tools/airwindows-harness/generate.sh"
+    ],
+    "notes": "Upstream reference sources live outside the repository at /Users/taco/gits/tacogips/music-things-refs (see the plans and design); they are not listed in sourcePaths because dispatch accepts only repository-relative paths."
   },
   "waves": {
-    "W1": ["ab2-00-scaffold"],
-    "W2": ["ab2-n01", "ab2-n02", "ab2-n03", "ab2-n04", "ab2-n05", "ab2-n06", "ab2-n07", "ab2-n08", "ab2-n09", "ab2-n10", "ab2-n11", "ab2-n12", "ab2-n13", "ab2-n14", "ab2-n15", "ab2-o-energy", "ab2-o-energy2", "ab2-o-fireamp", "ab2-o-grindamp", "ab2-o-leadamp", "ab2-o-lilamp", "ab2-o-logical4", "ab2-o-midamp", "ab2-o-monitoring", "ab2-o-monitoring3", "ab2-o-mv", "ab2-o-nikola", "ab2-o-nonlinearspace", "ab2-o-pocketverbs"],
-    "W3": ["ab2-99-integration"]
+    "W1": [
+      "ab2-00-scaffold"
+    ],
+    "W2": [
+      "ab2-n01",
+      "ab2-n02",
+      "ab2-n03",
+      "ab2-n04",
+      "ab2-n05",
+      "ab2-n06",
+      "ab2-n07",
+      "ab2-n08",
+      "ab2-n09",
+      "ab2-n10",
+      "ab2-n11",
+      "ab2-n12",
+      "ab2-n13",
+      "ab2-n14",
+      "ab2-n15",
+      "ab2-o-energy",
+      "ab2-o-energy2",
+      "ab2-o-fireamp",
+      "ab2-o-grindamp",
+      "ab2-o-leadamp",
+      "ab2-o-lilamp",
+      "ab2-o-logical4",
+      "ab2-o-midamp",
+      "ab2-o-monitoring",
+      "ab2-o-monitoring3",
+      "ab2-o-mv",
+      "ab2-o-nikola",
+      "ab2-o-nonlinearspace",
+      "ab2-o-pocketverbs"
+    ],
+    "W3": [
+      "ab2-99-integration"
+    ]
   },
   "portPlanPathRule": "For every W2 plan: writePaths = [crates/airwindows/src/plugins/batch2/<gNN> and crates/airwindows/tests/parity_batch2_<gNN>.rs and crates/airwindows/tests/fixtures/batch2/<gNN> for each owned group, the plan file, target, tmp/airwindows-batch2/<planId>]; sharedPaths = []; artifactRoots = [target, tmp/airwindows-batch2/<planId>]; dependsOn = [ab2-00-scaffold]. Verification = commands 1-7 of common section 9 with the plan's groups (each plan file lists them verbatim) plus the mandatory common gate 7b (no 'dead_code' left in owned group dirs). Development rule (S5-M1): declare 'mod <module>;' early so that cargo check compiles it, add '<module>::ENTRY' only when the plugin is complete, keep the shared crate compiling, and wait on sibling breakage only for a bounded time (common sections 5.6 and 8).",
   "plans": [
@@ -176,7 +209,9 @@
     {
       "planId": "ab2-n01",
       "planPath": "impl-plans/active/airwindows-batch2-n01-g01.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g01",
         "crates/airwindows/tests/parity_batch2_g01.rs",
@@ -186,7 +221,10 @@
         "tmp/airwindows-batch2/ab2-n01"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n01"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n01"
+      ],
       "acceptanceCriteria": [
         "All 8 g01 plugins (DitherMeTimbers, Doublelay, DoublePaul, Drive, DrumSlam, DubCenter, Dubly, DubSub) are fully ported, registered with one ENTRY each in g01/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -206,7 +244,9 @@
     {
       "planId": "ab2-n02",
       "planPath": "impl-plans/active/airwindows-batch2-n02-g02.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g02",
         "crates/airwindows/tests/parity_batch2_g02.rs",
@@ -216,7 +256,10 @@
         "tmp/airwindows-batch2/ab2-n02"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n02"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n02"
+      ],
       "acceptanceCriteria": [
         "All 7 g02 plugins (DustBunny, Dynamics, Dyno, Edge, EdIsDim, Elation, ElectroHat) are fully ported, registered with one ENTRY each in g02/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -236,7 +279,9 @@
     {
       "planId": "ab2-n03",
       "planPath": "impl-plans/active/airwindows-batch2-n03-g05.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g05",
         "crates/airwindows/tests/parity_batch2_g05.rs",
@@ -246,7 +291,10 @@
         "tmp/airwindows-batch2/ab2-n03"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n03"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n03"
+      ],
       "acceptanceCriteria": [
         "All 6 g05 plugins (Ensemble, EQ, EveryTrim, Exciter, Facet, FathomFive) are fully ported, registered with one ENTRY each in g05/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -266,7 +314,9 @@
     {
       "planId": "ab2-n04",
       "planPath": "impl-plans/active/airwindows-batch2-n04-g07.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g07",
         "crates/airwindows/tests/parity_batch2_g07.rs",
@@ -276,7 +326,10 @@
         "tmp/airwindows-batch2/ab2-n04"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n04"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n04"
+      ],
       "acceptanceCriteria": [
         "All 5 g07 plugins (Flipity, Floor, Flutter, Focus, Fracture) are fully ported, registered with one ENTRY each in g07/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -296,7 +349,9 @@
     {
       "planId": "ab2-n05",
       "planPath": "impl-plans/active/airwindows-batch2-n05-g08.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g08",
         "crates/airwindows/tests/parity_batch2_g08.rs",
@@ -306,7 +361,10 @@
         "tmp/airwindows-batch2/ab2-n05"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n05"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n05"
+      ],
       "acceptanceCriteria": [
         "All 5 g08 plugins (FromTape, Galactic, Gatelope, GlitchShifter, Golem) are fully ported, registered with one ENTRY each in g08/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -326,7 +384,9 @@
     {
       "planId": "ab2-n06",
       "planPath": "impl-plans/active/airwindows-batch2-n06-g10.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g10",
         "crates/airwindows/tests/parity_batch2_g10.rs",
@@ -336,7 +396,10 @@
         "tmp/airwindows-batch2/ab2-n06"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n06"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n06"
+      ],
       "acceptanceCriteria": [
         "All 7 g10 plugins (Gringer, GrooveWear, GuitarConditioner, HardVacuum, Hermepass, HermeTrim, HighGlossDither) are fully ported, registered with one ENTRY each in g10/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -356,7 +419,9 @@
     {
       "planId": "ab2-n07",
       "planPath": "impl-plans/active/airwindows-batch2-n07-g11.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g11",
         "crates/airwindows/tests/parity_batch2_g11.rs",
@@ -366,7 +431,10 @@
         "tmp/airwindows-batch2/ab2-n07"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n07"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n07"
+      ],
       "acceptanceCriteria": [
         "All 7 g11 plugins (HighImpact, Highpass, Highpass2, Holt, Holt2, Hombre, Hull) are fully ported, registered with one ENTRY each in g11/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -386,7 +454,9 @@
     {
       "planId": "ab2-n08",
       "planPath": "impl-plans/active/airwindows-batch2-n08-g12.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g12",
         "crates/airwindows/tests/parity_batch2_g12.rs",
@@ -396,7 +466,10 @@
         "tmp/airwindows-batch2/ab2-n08"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n08"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n08"
+      ],
       "acceptanceCriteria": [
         "All 6 g12 plugins (Hype, Hypersonic, HypersonX, Infinity, Infinity2, Infrasonic) are fully ported, registered with one ENTRY each in g12/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -416,7 +489,9 @@
     {
       "planId": "ab2-n09",
       "planPath": "impl-plans/active/airwindows-batch2-n09-g13.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g13",
         "crates/airwindows/tests/parity_batch2_g13.rs",
@@ -426,7 +501,10 @@
         "tmp/airwindows-batch2/ab2-n09"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n09"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n09"
+      ],
       "acceptanceCriteria": [
         "All 6 g13 plugins (Interstage, IronOxide5, IronOxideClassic, IronOxideClassic2, Isolator, Isolator2) are fully ported, registered with one ENTRY each in g13/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -446,7 +524,9 @@
     {
       "planId": "ab2-n10",
       "planPath": "impl-plans/active/airwindows-batch2-n10-g15-g18.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g15",
         "crates/airwindows/src/plugins/batch2/g18",
@@ -459,7 +539,10 @@
         "tmp/airwindows-batch2/ab2-n10"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n10"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n10"
+      ],
       "acceptanceCriteria": [
         "All 6 plugins are fully ported, registered and pass parity: g15 LeftoMono (1 ENTRY) and g18 Loud, Lowpass, Lowpass2, LRFlipTimer, Luxor (5 ENTRY lines in kick order); a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -479,7 +562,9 @@
     {
       "planId": "ab2-n11",
       "planPath": "impl-plans/active/airwindows-batch2-n11-g19-g21.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g19",
         "crates/airwindows/src/plugins/batch2/g21",
@@ -492,7 +577,10 @@
         "tmp/airwindows-batch2/ab2-n11"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n11"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n11"
+      ],
       "acceptanceCriteria": [
         "All 6 plugins are fully ported, registered and pass parity: g19 MackEQ, Mackity, MatrixVerb, Melt (4 ENTRY lines) and g21 MidSide, Mojo (2 ENTRY lines); a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -512,7 +600,9 @@
     {
       "planId": "ab2-n12",
       "planPath": "impl-plans/active/airwindows-batch2-n12-g23-g25-g27-g29.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g23",
         "crates/airwindows/src/plugins/batch2/g25",
@@ -531,7 +621,10 @@
         "tmp/airwindows-batch2/ab2-n12"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n12"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n12"
+      ],
       "acceptanceCriteria": [
         "All 8 plugins are fully ported, registered and pass parity: g23 Monitoring2 (1), g25 MoNoam, MultiBandDistortion (2), g27 NaturalizeDither, NCSeventeen, Neverland (3), g29 NodeDither, Noise (2); a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -551,7 +644,9 @@
     {
       "planId": "ab2-n13",
       "planPath": "impl-plans/active/airwindows-batch2-n13-g31.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g31",
         "crates/airwindows/tests/parity_batch2_g31.rs",
@@ -561,7 +656,10 @@
         "tmp/airwindows-batch2/ab2-n13"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n13"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n13"
+      ],
       "acceptanceCriteria": [
         "All 6 g31 plugins (NotJustAnotherCD, NotJustAnotherDither, OneCornerClip, Pafnuty, PaulDither, PaulWide) are fully ported, registered with one ENTRY each in g31/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -581,7 +679,9 @@
     {
       "planId": "ab2-n14",
       "planPath": "impl-plans/active/airwindows-batch2-n14-g32.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g32",
         "crates/airwindows/tests/parity_batch2_g32.rs",
@@ -591,7 +691,10 @@
         "tmp/airwindows-batch2/ab2-n14"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n14"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n14"
+      ],
       "acceptanceCriteria": [
         "All 6 g32 plugins (PDBuss, PDChannel, PeaksOnly, PhaseNudge, PitchDelay, PitchNasty) are fully ported, registered with one ENTRY each in g32/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -611,7 +714,9 @@
     {
       "planId": "ab2-n15",
       "planPath": "impl-plans/active/airwindows-batch2-n15-g34.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g34",
         "crates/airwindows/tests/parity_batch2_g34.rs",
@@ -621,7 +726,10 @@
         "tmp/airwindows-batch2/ab2-n15"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-n15"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-n15"
+      ],
       "acceptanceCriteria": [
         "All 7 g34 plugins (Pockey, Pockey2, Podcast, PodcastDeluxe, Point, Pop, Pop2) are fully ported, registered with one ENTRY each in g34/mod.rs and pass parity; a missing, stubbed or unregistered plugin is a plan failure.",
         "Each ParityRecord and module header records the tolerance class and measured max-abs.",
@@ -641,7 +749,9 @@
     {
       "planId": "ab2-o-energy",
       "planPath": "impl-plans/active/airwindows-batch2-o-energy-g03.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g03",
         "crates/airwindows/tests/parity_batch2_g03.rs",
@@ -651,7 +761,10 @@
         "tmp/airwindows-batch2/ab2-o-energy"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-energy"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-energy"
+      ],
       "acceptanceCriteria": [
         "Energy (oversized, 1448-line upstream Proc) is fully ported as module directory g03/energy/ with submodules, registered with exactly one ENTRY in g03/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -671,7 +784,9 @@
     {
       "planId": "ab2-o-energy2",
       "planPath": "impl-plans/active/airwindows-batch2-o-energy2-g04.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g04",
         "crates/airwindows/tests/parity_batch2_g04.rs",
@@ -681,7 +796,10 @@
         "tmp/airwindows-batch2/ab2-o-energy2"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-energy2"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-energy2"
+      ],
       "acceptanceCriteria": [
         "Energy2 (oversized, 1292-line upstream Proc) is fully ported as module directory g04/energy2/ with submodules, registered with exactly one ENTRY in g04/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -701,7 +819,9 @@
     {
       "planId": "ab2-o-fireamp",
       "planPath": "impl-plans/active/airwindows-batch2-o-fireamp-g06.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g06",
         "crates/airwindows/tests/parity_batch2_g06.rs",
@@ -711,7 +831,10 @@
         "tmp/airwindows-batch2/ab2-o-fireamp"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-fireamp"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-fireamp"
+      ],
       "acceptanceCriteria": [
         "FireAmp (oversized, 1707-line upstream Proc) is fully ported as module directory g06/fireamp/ with submodules, registered with exactly one ENTRY in g06/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -731,7 +854,9 @@
     {
       "planId": "ab2-o-grindamp",
       "planPath": "impl-plans/active/airwindows-batch2-o-grindamp-g09.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g09",
         "crates/airwindows/tests/parity_batch2_g09.rs",
@@ -741,7 +866,10 @@
         "tmp/airwindows-batch2/ab2-o-grindamp"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-grindamp"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-grindamp"
+      ],
       "acceptanceCriteria": [
         "GrindAmp (oversized, 1650-line upstream Proc) is fully ported as module directory g09/grindamp/ with submodules, registered with exactly one ENTRY in g09/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -761,7 +889,9 @@
     {
       "planId": "ab2-o-leadamp",
       "planPath": "impl-plans/active/airwindows-batch2-o-leadamp-g14.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g14",
         "crates/airwindows/tests/parity_batch2_g14.rs",
@@ -771,7 +901,10 @@
         "tmp/airwindows-batch2/ab2-o-leadamp"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-leadamp"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-leadamp"
+      ],
       "acceptanceCriteria": [
         "LeadAmp (oversized, 1770-line upstream Proc) is fully ported as module directory g14/leadamp/ with submodules, registered with exactly one ENTRY in g14/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -791,7 +924,9 @@
     {
       "planId": "ab2-o-lilamp",
       "planPath": "impl-plans/active/airwindows-batch2-o-lilamp-g16.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g16",
         "crates/airwindows/tests/parity_batch2_g16.rs",
@@ -801,7 +936,10 @@
         "tmp/airwindows-batch2/ab2-o-lilamp"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-lilamp"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-lilamp"
+      ],
       "acceptanceCriteria": [
         "LilAmp (oversized, 1204-line upstream Proc) is fully ported as module directory g16/lilamp/ with submodules, registered with exactly one ENTRY in g16/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -821,7 +959,9 @@
     {
       "planId": "ab2-o-logical4",
       "planPath": "impl-plans/active/airwindows-batch2-o-logical4-g17.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g17",
         "crates/airwindows/tests/parity_batch2_g17.rs",
@@ -831,7 +971,10 @@
         "tmp/airwindows-batch2/ab2-o-logical4"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-logical4"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-logical4"
+      ],
       "acceptanceCriteria": [
         "Logical4 (oversized, about 1700-line upstream Proc) is fully ported as module directory g17/logical4/ with submodules, registered with exactly one ENTRY in g17/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -851,7 +994,9 @@
     {
       "planId": "ab2-o-midamp",
       "planPath": "impl-plans/active/airwindows-batch2-o-midamp-g20.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g20",
         "crates/airwindows/tests/parity_batch2_g20.rs",
@@ -861,7 +1006,10 @@
         "tmp/airwindows-batch2/ab2-o-midamp"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-midamp"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-midamp"
+      ],
       "acceptanceCriteria": [
         "MidAmp (oversized, 1290-line upstream Proc) is fully ported as module directory g20/midamp/ with submodules, registered with exactly one ENTRY in g20/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -881,7 +1029,9 @@
     {
       "planId": "ab2-o-monitoring",
       "planPath": "impl-plans/active/airwindows-batch2-o-monitoring-g22.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g22",
         "crates/airwindows/tests/parity_batch2_g22.rs",
@@ -891,7 +1041,10 @@
         "tmp/airwindows-batch2/ab2-o-monitoring"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-monitoring"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-monitoring"
+      ],
       "acceptanceCriteria": [
         "Monitoring (oversized, 1042-line upstream Proc) is fully ported as module directory g22/monitoring/ with submodules, registered with exactly one ENTRY in g22/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -911,7 +1064,9 @@
     {
       "planId": "ab2-o-monitoring3",
       "planPath": "impl-plans/active/airwindows-batch2-o-monitoring3-g24.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g24",
         "crates/airwindows/tests/parity_batch2_g24.rs",
@@ -921,7 +1076,10 @@
         "tmp/airwindows-batch2/ab2-o-monitoring3"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-monitoring3"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-monitoring3"
+      ],
       "acceptanceCriteria": [
         "Monitoring3 (oversized, 1050-line upstream Proc) is fully ported as module directory g24/monitoring3/ with submodules, registered with exactly one ENTRY in g24/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -941,7 +1099,9 @@
     {
       "planId": "ab2-o-mv",
       "planPath": "impl-plans/active/airwindows-batch2-o-mv-g26.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g26",
         "crates/airwindows/tests/parity_batch2_g26.rs",
@@ -951,7 +1111,10 @@
         "tmp/airwindows-batch2/ab2-o-mv"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-mv"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-mv"
+      ],
       "acceptanceCriteria": [
         "MV (oversized, 1532-line upstream Proc) is fully ported as module directory g26/mv/ with submodules, registered with exactly one ENTRY in g26/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -971,7 +1134,9 @@
     {
       "planId": "ab2-o-nikola",
       "planPath": "impl-plans/active/airwindows-batch2-o-nikola-g28.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g28",
         "crates/airwindows/tests/parity_batch2_g28.rs",
@@ -981,7 +1146,10 @@
         "tmp/airwindows-batch2/ab2-o-nikola"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-nikola"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-nikola"
+      ],
       "acceptanceCriteria": [
         "Nikola (oversized, 2047-line upstream Proc) is fully ported as module directory g28/nikola/ with submodules, registered with exactly one ENTRY in g28/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -1001,7 +1169,9 @@
     {
       "planId": "ab2-o-nonlinearspace",
       "planPath": "impl-plans/active/airwindows-batch2-o-nonlinearspace-g30.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g30",
         "crates/airwindows/tests/parity_batch2_g30.rs",
@@ -1011,7 +1181,10 @@
         "tmp/airwindows-batch2/ab2-o-nonlinearspace"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-nonlinearspace"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-nonlinearspace"
+      ],
       "acceptanceCriteria": [
         "NonlinearSpace (oversized, about 1448-line upstream Proc) is fully ported as module directory g30/nonlinearspace/ with submodules, registered with exactly one ENTRY in g30/mod.rs and passes parity for all three renders; a stub or unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines; large buffers are Box<[T]> allocated in the constructor; the ParityRecord and module header record the tolerance class and measured max-abs.",
@@ -1031,7 +1204,9 @@
     {
       "planId": "ab2-o-pocketverbs",
       "planPath": "impl-plans/active/airwindows-batch2-o-pocketverbs-g33.md",
-      "dependsOn": ["ab2-00-scaffold"],
+      "dependsOn": [
+        "ab2-00-scaffold"
+      ],
       "writePaths": [
         "crates/airwindows/src/plugins/batch2/g33",
         "crates/airwindows/tests/parity_batch2_g33.rs",
@@ -1041,7 +1216,10 @@
         "tmp/airwindows-batch2/ab2-o-pocketverbs"
       ],
       "sharedPaths": [],
-      "artifactRoots": ["target", "tmp/airwindows-batch2/ab2-o-pocketverbs"],
+      "artifactRoots": [
+        "target",
+        "tmp/airwindows-batch2/ab2-o-pocketverbs"
+      ],
       "acceptanceCriteria": [
         "PocketVerbs (oversized, 18358-line upstream Proc; only the processReplacing half is ported) is fully ported as module directory g33/pocketverbs/ with one submodule per reverb type of the upstream type switch, registered with exactly one ENTRY in g33/mod.rs only after every type is ported, and passes parity for all three renders; a stub, a missing type or an unregistered module is a plan failure, not a deferral.",
         "No .rs file reaches 1000 lines (a type over 1000 lines is split again); large buffers are Box<[T]> allocated in the constructor; the ParityRecord and module header record the tolerance class and measured max-abs.",
