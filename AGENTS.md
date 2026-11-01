@@ -154,7 +154,11 @@ This is music-things - a Cargo workspace of reusable, host-agnostic Rust synth a
 ├── Cargo.toml         # Virtual workspace manifest (members = crates/*)
 ├── Cargo.lock         # Locked Rust dependencies
 ├── crates/            # One directory per DSP crate
+│   ├── airwindows/    # Airwindows effect ports
+│   ├── soundfont/     # SoundFont and MIDI ports
+│   ├── pitch/         # Pitch shifting and tracking ports
 │   └── music-things/  # Facade crate re-exporting the member crates
+├── tools/             # Upstream reference harnesses
 ├── THIRD_PARTY_NOTICES.md
 └── .gitignore         # Git ignore patterns
 ```

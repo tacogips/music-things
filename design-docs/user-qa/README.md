@@ -15,6 +15,7 @@ Store questions, pending decisions, and items awaiting user approval.
 
 ## Current Items
 
+- [pending-behringer-oss-ports-batch1.md](./pending-behringer-oss-ports-batch1.md) - Behringer OSS ports batch 1: non-blocking defaults (display formatting, stft streaming-wrapper verification, tolerance calibration, fixture regeneration)
 - [qa-example.md](./qa-example.md) - Example: Database Selection (template example)
 - [pending-example.md](./pending-example.md) - Example: CLI Output Format (template example)
 

@@ -5,6 +5,15 @@ version = 4
 [[package]]
 name = "music-things"
 version = "0.1.0"
+dependencies = [
+ "music-things-airwindows",
+ "music-things-pitch",
+ "music-things-soundfont",
+]
+
+[[package]]
+name = "music-things-airwindows"
+version = "0.1.0"
 
 [[package]]
 name = "music-things-dsp"
@@ -17,6 +26,14 @@ dependencies = [
  "music-things-dsp",
  "music-things-synth",
 ]
+
+[[package]]
+name = "music-things-pitch"
+version = "0.1.0"
+
+[[package]]
+name = "music-things-soundfont"
+version = "0.1.0"
 
 [[package]]
 name = "music-things-synth"
