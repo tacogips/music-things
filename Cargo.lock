@@ -7,8 +7,11 @@ name = "music-things"
 version = "0.1.0"
 dependencies = [
  "music-things-airwindows",
+ "music-things-dsp",
+ "music-things-fx",
  "music-things-pitch",
  "music-things-soundfont",
+ "music-things-synth",
 ]
 
 [[package]]
