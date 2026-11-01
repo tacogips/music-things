@@ -1,11 +1,11 @@
 # Behringer OSS Ports 17a: Pitch Crate, smbPitchShift Port
 
-**Status**: Ready
+**Status**: Completed
 **Plan ID**: bop-17a
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section C (smbPitchShift, smb int16 bridge, Parity table: smb), D7, D8
 **Depends On**: bop-00 (wave W2; parallel with bop-01, bop-16a, bop-16b, bop-17b, bop-17c)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 

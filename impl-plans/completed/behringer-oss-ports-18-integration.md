@@ -1,11 +1,11 @@
 # Behringer OSS Ports 18: Facade Features, Notices, Docs and Batch-1 Completeness
 
-**Status**: Ready
+**Status**: Completed
 **Plan ID**: bop-18
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section D (Facade), Global rules (Notices), Verification, Additive procedure
 **Depends On**: bop-00, bop-01, bop-02..bop-15, bop-16a, bop-16b, bop-16c, bop-17a, bop-17b, bop-17c (wave W4, serial)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 
@@ -118,14 +118,36 @@ Patterns to imitate: `crates/music-things/Cargo.toml` (the manifest style) and
 
 ## Completion Criteria
 
-- [ ] Deliverables 1-7 done.
-- [ ] Verifications 1-9 pass, with logs in `tmp/behringer-oss-ports/bop-18/logs/`. Failures in other
+- [x] Deliverables 1-7 done.
+- [x] Verifications 1-9 pass, with logs in `tmp/behringer-oss-ports/bop-18/logs/`. Failures in other
       plans' files are listed as findings with the owning plan ID.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log updated with commands, exit status, tests run/passed and log paths.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log updated with commands, exit status, tests run/passed and log paths.
 
 ## Progress Log
 
 ### Session: 2026-10-31
 **Tasks Completed**: Plan created (not started)
 **Notes**: -
+
+
+### Session: 2026-11-01 (integration implementation)
+**Tasks Completed**: Facade optional dependencies and re-exports, hard-coded 110-name catalog test, notices, README and project structure. Formal review remains downstream.
+**Verification**: All commands exit 0; logs are under `tmp/behringer-oss-ports/bop-18/logs/`. Cargo commands used `CARGO_TERM_QUIET=true` and `CARGO_TARGET_DIR=target/bop-18-integration` except focused checks (`target/bop-18-check`). Nextest also used `NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1`.
+
+- `cargo nextest run --workspace`: 150 run, 150 passed, 3 skipped; `workspace-nextest-final.log`.
+- `cargo build --workspace --target wasm32-unknown-unknown`: 0 tests; `workspace-wasm-final.log`.
+- `cargo build -p music-things --all-features --target wasm32-unknown-unknown`: 0 tests; `facade-wasm-final.log`.
+- `cargo clippy --workspace --all-targets -- -D warnings`: 0 tests; `workspace-clippy-final.log`.
+- `cargo clippy -p music-things --all-features -- -D warnings`: 0 tests; `facade-clippy-final.log`.
+- `cargo fmt --check`: 0 tests; `fmt-final.log`.
+- Fixture byte budget checks: Airwindows 1,406,647; soundfont 91,449; pitch 177,427; total 1,675,523; all within limits, 0 tests; `airwindows-budget.log`, `soundfont-budget.log`, `pitch-budget.log`, `total-budget.log`.
+- Rust source line limit check and `git diff --quiet Cargo.toml`: 0 tests; `lines.log`, `root-manifest.log`.
+- `cargo nextest run -p music-things-airwindows --test batch1_complete`: 1 run, 1 passed; `focused-batch1.log`.
+- `cargo build -p music-things` and `cargo build -p music-things --all-features`: 0 tests; `focused-facade-default.log`, `focused-facade-all.log`.
+- `cargo test -p music-things --all-features --doc`: 1 run, 1 passed; `focused-facade-doc.log`.
+
+**Finding carried from bop-15**: bop-01 owns `crates/airwindows/tests/common/parity.rs`; it does not assert recorded `measured_max_abs` values, although the tolerance assertions remain active. The accepted bop-15 review records this as a low residual risk.
+
+### Session: 2026-11-01 (completion)
+**Status**: Completed. Review-loop session-624 accepted it: test integrity (step6-test-integrity-check-attempt-1-exec-10029, comm-012081), adversarial review (step7-adversarial-review-attempt-1-exec-10030, comm-012082) and integration review (integration-review-attempt-1-exec-10034, comm-012087), all with no findings. Step 7b skipped browser E2E because the workspace has no browser surface. All 23 batch-1 plans (bop-00 through bop-18) were finalized and archived to `impl-plans/completed/`.

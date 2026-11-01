@@ -1,11 +1,11 @@
 # Behringer OSS Ports 10: Airwindows Batch-1 Group g09 (kick list lines 65-72)
 
-**Status**: Ready
+**Status**: Completed
 **Plan ID**: bop-10
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances)
 **Depends On**: bop-01 (wave W3; runs in parallel with the other 13 group plans and bop-16c)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 

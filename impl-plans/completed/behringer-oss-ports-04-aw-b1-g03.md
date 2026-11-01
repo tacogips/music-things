@@ -1,11 +1,11 @@
 # Behringer OSS Ports 04: Airwindows Batch-1 Group g03 (kick list lines 17-24)
 
-**Status**: In Progress
+**Status**: Completed
 **Plan ID**: bop-04
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances)
 **Depends On**: bop-01 (wave W3; runs in parallel with the other 13 group plans and bop-16c)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 
@@ -117,11 +117,11 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 
 ## Completion Criteria
 
-- [ ] All 8 plugins of lines 17-24 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-04/logs/`.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] All 8 plugins of lines 17-24 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-04/logs/`.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
@@ -164,3 +164,19 @@ rustfmt and wasm32 all exit 0). Re-verify the plugin against the plan and the
 pinned upstream source, fix anything a review finds, and re-run every gate
 with fresh logs. Sibling plans are committed dependencies (see the manifest's
 acceptedDependencies), so the shared crate is stable.
+
+### Session: 2026-11-01 (final source verification)
+**Progress**: Reviewed BigAmp against the pinned upstream float path and added the upstream copyright and revision to its split cabinet source. Group order: BassDrive, BassKit, Baxandall, Baxandall2, Beam, BigAmp, Biquad, Biquad2. All eight records are Libm, measured max-abs 0.0.
+**Verification**: The following commands ran with `CARGO_TARGET_DIR=target/bop-04-current` and `CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1`; all exited 0. Logs are under `tmp/behringer-oss-ports/bop-04/logs/`.
+
+1. `cargo nextest run -p music-things-airwindows --test parity_batch1_g03`: 8 passed, 0 failed; `final-parity.log`.
+2. `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc`: 4 passed, 0 failed; `final-catalog.log`.
+3. `cargo clippy -p music-things-airwindows --all-targets -- -D warnings`: `final-clippy.log`.
+4. `find crates/airwindows/src/plugins/batch1/g03 crates/airwindows/tests/parity_batch1_g03.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check`: `final-rustfmt.log`.
+5. `cargo build -p music-things-airwindows --target wasm32-unknown-unknown`: `final-wasm.log`.
+6. `test -z "$(find crates/airwindows/src/plugins/batch1/g03 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"`: `final-lines.log`.
+
+Formal review and integration remain downstream.
+
+### Session: 2026-11-01 (completion)
+**Status**: Completed. Review-loop session-624 accepted it: test integrity (comm-012081), adversarial review (comm-012082) and integration review (comm-012087), all with no findings. The bop-18 combined-tree gates passed after this plan's last edit: workspace nextest 150 run, 150 passed (`tmp/behringer-oss-ports/bop-18/logs/workspace-nextest-final.log`); workspace clippy, wasm32 and `cargo fmt --check` exit 0 (`workspace-clippy-final.log`, `workspace-wasm-final.log`, `fmt-final.log`). Archived to `impl-plans/completed/`.

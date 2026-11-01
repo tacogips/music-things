@@ -1,6 +1,6 @@
 //! Copyright (c) 2011 __MyCompanyName__, Airwindows uses the MIT license
 //! Upstream: airwindows/plugins/LinuxVST/src/Distance, b110fac3991fff7c4655cc2d25d6a3e221f9799c.
-//! Parity: Libm; measured max-abs pending.
+//! Parity: Libm; measured max-abs 0.0.
 use crate::display::float2string;
 use crate::dither::{fpd_dither, fpd_from_seed};
 use crate::params::sanitize_param;

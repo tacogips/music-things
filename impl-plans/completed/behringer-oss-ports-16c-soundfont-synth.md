@@ -1,11 +1,11 @@
 # Behringer OSS Ports 16c: SoundFont Crate, Synth Runtime (tsf.h voices, channels, render)
 
-**Status**: In Progress
+**Status**: Completed
 **Plan ID**: bop-16c
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section B (Synth::new, Voice API, Channel API, Realtime behavior, Parity method S1/S2, tsf tolerance), D4
 **Depends On**: bop-16a, bop-16b (wave W3; parallel with bop-02..bop-15)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 

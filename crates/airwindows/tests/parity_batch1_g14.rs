@@ -66,7 +66,7 @@ fn distortion() {
 
 const RECORD_DITHERBOX: ParityRecord = ParityRecord {
     name: "Ditherbox",
-    class: ParityClass::Exact,
+    class: ParityClass::Libm,
     measured_max_abs: 0.0,
     note: "",
 };

@@ -1,11 +1,11 @@
 # Behringer OSS Ports 01: Airwindows Framework, Harness and Batch-1 Fixtures
 
-**Status**: In Progress
+**Status**: Completed
 **Plan ID**: bop-01
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Public API, Framework internals, Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances), D1/D5/D6
 **Depends On**: bop-00 (wave W2; runs in parallel with bop-16a, bop-16b, bop-17a/b/c)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 

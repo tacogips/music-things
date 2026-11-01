@@ -1,11 +1,11 @@
 # Behringer OSS Ports 15: Airwindows Batch-1 Group g14 (kick list lines 105-110)
 
-**Status**: Ready
+**Status**: Completed
 **Plan ID**: bop-15
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances)
 **Depends On**: bop-01 (wave W3; runs in parallel with the other 13 group plans and bop-16c)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 
@@ -117,11 +117,11 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 
 ## Completion Criteria
 
-- [ ] All 6 plugins of lines 105-110 are ported, registered in order and tested (or marked BLOCKED with evidence).
-- [ ] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
-- [ ] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-15/logs/`.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] All 6 plugins of lines 105-110 are ported, registered in order and tested (or marked BLOCKED with evidence).
+- [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
+- [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-15/logs/`.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
@@ -171,3 +171,19 @@ rustfmt and wasm32 all exit 0). Re-verify the plugin against the plan and the
 pinned upstream source, fix anything a review finds, and re-run every gate
 with fresh logs. Sibling plans are committed dependencies (see the manifest's
 acceptedDependencies), so the shared crate is stable.
+
+
+### Session: 2026-11-01 (final implementation verification)
+**Tasks completed**: Verified the six registered plugins in kick-list order. Measured maximum absolute errors across R0–R2 on Darwin arm64: Distance (Libm, 0.0), Distance2 (Libm, 0.0), Distortion (Libm, 0.0), Ditherbox (Libm, 0.0), DitherFloat (Exact, 0.0), DitherMeDiskers (Exact, 0.0). Ditherbox's class is Libm because its processing includes sine and cosine. The deliberate initialization of upstream's uninitialized `flip` is documented in its header.
+**Measurement**: `CARGO_TARGET_DIR=target/bop-15-measure CARGO_TERM_QUIET=true cargo test -p music-things-airwindows --test parity_batch1_g14 measure_bop15_maxima -- --nocapture` exited 0 (1 test); `tmp/behringer-oss-ports/bop-15/logs/measurement-test.log`. Temporary instrumentation was removed after measurement.
+**Final gates**: Cargo commands used `CARGO_TARGET_DIR=target/bop-15-final CARGO_TERM_QUIET=true`; nextest additionally used `NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1`.
+- `cargo nextest run -p music-things-airwindows --test parity_batch1_g14`: exit 0, 6 passed, 0 failed; `tmp/behringer-oss-ports/bop-15/logs/fresh-parity.log`.
+- `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc`: exit 0, 4 passed, 0 failed; `tmp/behringer-oss-ports/bop-15/logs/fresh-catalog.log`.
+- `cargo clippy -p music-things-airwindows --all-targets -- -D warnings`: exit 0; `tmp/behringer-oss-ports/bop-15/logs/fresh-clippy.log`.
+- `find crates/airwindows/src/plugins/batch1/g14 crates/airwindows/tests/parity_batch1_g14.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check`: exit 0; `tmp/behringer-oss-ports/bop-15/logs/fresh-rustfmt.log`.
+- `cargo build -p music-things-airwindows --target wasm32-unknown-unknown`: exit 0; `tmp/behringer-oss-ports/bop-15/logs/fresh-wasm.log`.
+- `test -z "$(find crates/airwindows/src/plugins/batch1/g14 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"`: exit 0; `tmp/behringer-oss-ports/bop-15/logs/fresh-lines.log`.
+**Next**: Formal integrity, adversarial and integration reviews and finalization remain downstream.
+
+### Session: 2026-11-01 (completion)
+**Status**: Completed. Review-loop session-624 accepted it: test integrity (comm-012081), adversarial review (comm-012082) and integration review (comm-012087), all with no blocking findings. The bop-18 combined-tree gates passed after this plan's last edit: workspace nextest 150 run, 150 passed (`tmp/behringer-oss-ports/bop-18/logs/workspace-nextest-final.log`); workspace clippy, wasm32 and `cargo fmt --check` exit 0 (`workspace-clippy-final.log`, `workspace-wasm-final.log`, `fmt-final.log`). Residual low risk: fixtures exercise only Ditherbox modes 11 and 8 and Distortion modes Spiral and Dyno; the other modes were matched manually against upstream. Archived to `impl-plans/completed/`.

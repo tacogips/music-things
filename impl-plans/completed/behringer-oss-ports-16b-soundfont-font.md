@@ -1,11 +1,11 @@
 # Behringer OSS Ports 16b: SoundFont Crate, SF2 Loading (tsf.h load path)
 
-**Status**: In Progress
+**Status**: Completed
 **Plan ID**: bop-16b
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section B (API: SoundFont::load and preset queries; Modules: font/; Parity method: font load dump; tolerances)
 **Depends On**: bop-00 (wave W2; parallel with bop-01, bop-16a, bop-17a/b/c)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 

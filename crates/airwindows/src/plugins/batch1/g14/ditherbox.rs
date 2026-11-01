@@ -1,6 +1,6 @@
 //! Copyright (c) 2011 __MyCompanyName__, Airwindows uses the MIT license
 //! Upstream: airwindows/plugins/LinuxVST/src/Ditherbox, revision b110fac3991fff7c4655cc2d25d6a3e221f9799c.
-//! Parity: Exact, measured max-abs 0.0.
+//! Parity: Libm, measured max-abs 0.0.
 //! Intentional divergence: upstream leaves flip uninitialized; it starts false here.
 #![allow(clippy::approx_constant)] // Preserve upstream constants.
 use crate::dither::{fpd_from_seed, xorshift};

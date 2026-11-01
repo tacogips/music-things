@@ -1,3 +1,5 @@
+//! Copyright (c) 2011 __MyCompanyName__, Airwindows uses the MIT license
+//! Upstream: airwindows/plugins/LinuxVST/src/BigAmp, revision b110fac3991fff7c4655cc2d25d6a3e221f9799c.
 //! Cabinet convolution from BigAmp's upstream float path.
 #![allow(clippy::excessive_precision, clippy::approx_constant, unused_parens)]
 pub(super) fn convolve(cab: &mut [f64; 90], mut sample: f64) -> f64 {

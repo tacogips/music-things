@@ -1,11 +1,11 @@
 # Behringer OSS Ports 09: Airwindows Batch-1 Group g08 (kick list lines 57-64)
 
-**Status**: Ready
+**Status**: Completed
 **Plan ID**: bop-09
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances)
 **Depends On**: bop-01 (wave W3; runs in parallel with the other 13 group plans and bop-16c)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 
@@ -120,8 +120,8 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 - [x] All 8 plugins of lines 57-64 are ported, registered in order and tested (or marked BLOCKED with evidence).
 - [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
 - [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-09/logs/`.
-- [ ] Only `writePaths` are modified.
-- [ ] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
+- [x] Only `writePaths` are modified.
+- [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
 
@@ -161,3 +161,6 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 6. `test -z "$(find crates/airwindows/src/plugins/batch1/g08 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"`: `lines.log`.
 
 Formal review and final integration remain downstream.
+
+### Session: 2026-11-01 (completion)
+**Status**: Completed. Session 578 accepted this plan through its formal test-integrity, adversarial and integration reviews, which included the writePaths check, and committed it at 49052ec. The dispatch manifest declares it as an accepted dependency. The package-wide Clippy blocker from sibling files is resolved: the bop-18 combined-tree `cargo clippy --workspace --all-targets -- -D warnings` exited 0 (`tmp/behringer-oss-ports/bop-18/logs/workspace-clippy-final.log`), and workspace nextest ran 150 tests with 150 passed (`workspace-nextest-final.log`). Archived to `impl-plans/completed/`.

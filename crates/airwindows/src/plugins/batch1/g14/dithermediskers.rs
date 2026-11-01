@@ -1,6 +1,6 @@
 //! Copyright (c) 2011 __MyCompanyName__, Airwindows uses the MIT license
 //! Upstream: airwindows/plugins/LinuxVST/src/DitherMeDiskers, b110fac3991fff7c4655cc2d25d6a3e221f9799c.
-//! Parity: Exact; measured max-abs pending.
+//! Parity: Exact; measured max-abs 0.0.
 use crate::registry::PluginEntry;
 use crate::{AirwindowsEffect, PluginInfo};
 

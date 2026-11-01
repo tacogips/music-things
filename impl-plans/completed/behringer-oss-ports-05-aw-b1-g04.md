@@ -1,11 +1,11 @@
 # Behringer OSS Ports 05: Airwindows Batch-1 Group g04 (kick list lines 25-32)
 
-**Status**: In Progress
+**Status**: Completed
 **Plan ID**: bop-05
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances)
 **Depends On**: bop-01 (wave W3; runs in parallel with the other 13 group plans and bop-16c)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 
@@ -120,7 +120,7 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 - [x] All 8 plugins of lines 25-32 are ported, registered in order and tested (or marked BLOCKED with evidence).
 - [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
 - [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-05/logs/`.
-- [ ] Only `writePaths` are modified.
+- [x] Only `writePaths` are modified.
 - [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
@@ -166,3 +166,6 @@ All six dispatch commands exited 0 with `CARGO_TARGET_DIR=target/bop-05-check` a
 BiquadDouble, BiquadOneHalf, BiquadPlus and BiquadTriple now retain parameters across reset; all eight group tests assert this contract. The pre-fix BiquadPlus negative control exited 101 as expected (`tmp/behringer-oss-ports/bop-05/logs/rw5-negative-confirm.log`). Parity classes and measured max-abs remain as recorded above.
 
 On the shared tree, all six dispatch commands exited 0 using `CARGO_TARGET_DIR=target/bop-05-check` and the specified quiet environment. Parity: 8/8 (`logs/rw5-final-parity.log`); catalog/no_alloc: 4/4 (`logs/rw5-final-catalog.log`); clippy (`logs/rw5-final-clippy.log`), rustfmt (`logs/rw5-final-rustfmt.log`), wasm (`logs/rw5-final-wasm.log`), and line limit (`logs/rw5-final-lines.log`) passed. Log paths are relative to `tmp/behringer-oss-ports/bop-05/`. Formal review remains downstream.
+
+### Session: 2026-11-01 (completion)
+**Status**: Completed. Session 578 accepted this plan through its formal test-integrity, adversarial and integration reviews, which included the writePaths check, and committed it at 49052ec. The dispatch manifest declares it as an accepted dependency. The bop-18 combined-tree gates also passed: workspace clippy exit 0 (`tmp/behringer-oss-ports/bop-18/logs/workspace-clippy-final.log`) and workspace nextest 150 run, 150 passed (`workspace-nextest-final.log`). Archived to `impl-plans/completed/`.

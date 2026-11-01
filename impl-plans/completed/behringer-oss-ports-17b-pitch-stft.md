@@ -1,11 +1,11 @@
 # Behringer OSS Ports 17b: Pitch Crate, stftPitchShift Core Port
 
-**Status**: In Progress
+**Status**: Completed
 **Plan ID**: bop-17b
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section C (stftPitchShift, rfft rule, asymmetric framesize, Parity table: stft offline/stream), D2, D8
 **Depends On**: bop-00 (wave W2; parallel with bop-01, bop-16a, bop-16b, bop-17a, bop-17c)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 

@@ -1,11 +1,11 @@
 # Behringer OSS Ports 07: Airwindows Batch-1 Group g06 (kick list lines 41-48)
 
-**Status**: In Progress
+**Status**: Completed
 **Plan ID**: bop-07
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section A (Additive registration, Batch-1 grouping, Porting rules, Parity method, Tolerances)
 **Depends On**: bop-01 (wave W3; runs in parallel with the other 13 group plans and bop-16c)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 
@@ -120,7 +120,7 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 - [x] All 8 plugins of lines 41-48 are ported, registered in order and tested (or marked BLOCKED with evidence).
 - [x] Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.
 - [x] Verifications 1-6 exit 0, with logs in `tmp/behringer-oss-ports/bop-07/logs/`.
-- [ ] Only `writePaths` are modified.
+- [x] Only `writePaths` are modified.
 - [x] Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths.
 
 ## Progress Log
@@ -146,3 +146,6 @@ the evidence and leave its `mod` line out. Once bop-01 fixes it, regenerate only
 **Redispatch verification (2026-11-01)**: The eight plugins listed above remain Libm, max-abs 0.0. With `CARGO_TARGET_DIR=$PWD/tmp/behringer-oss-ports/bop-07/check-target`, `CARGO_TERM_QUIET=true`, `NEXTEST_STATUS_LEVEL=fail`, `NEXTEST_FAILURE_OUTPUT=immediate-final`, and `NEXTEST_HIDE_PROGRESS_BAR=1`: `cargo nextest run -p music-things-airwindows --test parity_batch1_g06` exit 0, 8/8 (`logs/turn4-parity.log`); `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` exit 0, 4/4 (`logs/turn4-catalog.log`); `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exit 0 (`logs/turn4-clippy.log`); `find crates/airwindows/src/plugins/batch1/g06 crates/airwindows/tests/parity_batch1_g06.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check` exit 0 (`logs/turn4-rustfmt.log`); `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` exit 0 (`logs/turn4-wasm.log`); `test -z "$(find crates/airwindows/src/plugins/batch1/g06 -name '*.rs' -exec wc -l {} + | awk '$2 != "total" && $1 >= 1000')"` exit 0 (`logs/turn4-lines.log`). Logs are under `tmp/behringer-oss-ports/bop-07/`. This was a shared-tree run; integrated review remains downstream.
 
 **Review repair BOP07-RESET-PARAMS (2026-11-01)**: All eight resets now retain parameters while resetting DSP state; Chamber and Chamber2 retain in-place buffer clearing. The regression in `parity_batch1_g06.rs` checks every parameter at 0.37 for all eight. Pre-fix focused test exited 100 (`logs/reset-negative.log`). With `CARGO_TARGET_DIR=$PWD/tmp/behringer-oss-ports/bop-07/repair-target CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1`, `cargo nextest run -p music-things-airwindows --test parity_batch1_g06` exited 0, 9/9 (`logs/repair-parity.log`); `cargo nextest run -p music-things-airwindows --test catalog --test no_alloc` exited 0, 4/4 (`logs/repair-catalog.log`); `cargo clippy -p music-things-airwindows --all-targets -- -D warnings` exited 0 (`logs/repair-clippy.log`); dispatched rustfmt check exited 0 (`logs/repair-rustfmt.log`); `cargo build -p music-things-airwindows --target wasm32-unknown-unknown` exited 0 (`logs/repair-wasm.log`); dispatched line-limit check exited 0 (`logs/repair-lines.log`). Fixture hash check against bop-01 exited 0, 16/16 (`logs/repair-fixtures.log`). Logs are under `tmp/behringer-oss-ports/bop-07/`; final integration review remains downstream.
+
+### Session: 2026-11-01 (completion)
+**Status**: Completed. Session 578 accepted this plan through its formal test-integrity, adversarial and integration reviews, which included the writePaths check, and committed it at 49052ec. The dispatch manifest declares it as an accepted dependency. The bop-18 combined-tree gates also passed: workspace clippy exit 0 (`tmp/behringer-oss-ports/bop-18/logs/workspace-clippy-final.log`) and workspace nextest 150 run, 150 passed (`workspace-nextest-final.log`). Archived to `impl-plans/completed/`.

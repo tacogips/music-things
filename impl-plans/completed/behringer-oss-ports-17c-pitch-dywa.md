@@ -1,11 +1,11 @@
 # Behringer OSS Ports 17c: Pitch Crate, dywapitchtrack Port
 
-**Status**: In Progress
+**Status**: Completed
 **Plan ID**: bop-17c
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md section C (dywapitchtrack, Parity table: dywa), D3
 **Depends On**: bop-00 (wave W2; parallel with bop-01, bop-16a, bop-16b, bop-17a, bop-17b)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 

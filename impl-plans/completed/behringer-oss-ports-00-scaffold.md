@@ -1,11 +1,11 @@
 # Behringer OSS Ports 00: Workspace Scaffold and Shared Test Contracts
 
-**Status**: In Progress
+**Status**: Completed
 **Plan ID**: bop-00
 **Design Reference**: design-docs/specs/design-behringer-oss-ports.md (Global rules; A Parity method/Stimulus; C Parity; Plans table)
 **Depends On**: none (wave W1)
 **Created**: 2026-10-31
-**Last Updated**: 2026-10-31
+**Last Updated**: 2026-11-01
 
 ## Intent and Context
 

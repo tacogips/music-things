@@ -5,6 +5,11 @@ version = 4
 [[package]]
 name = "music-things"
 version = "0.1.0"
+dependencies = [
+ "music-things-airwindows",
+ "music-things-pitch",
+ "music-things-soundfont",
+]
 
 [[package]]
 name = "music-things-airwindows"
