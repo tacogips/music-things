@@ -4,7 +4,7 @@
   "implementationBranch": "wf/behringer-oss-ports",
   "baseBranch": "wf/behringer-oss-ports",
   "remote": "origin",
-  "originalHead": "a72a955",
+  "originalHead": "49052ec15329b3972ecfa2ea512767e8ca02a167",
   "evidenceRoot": "tmp/behringer-oss-ports",
   "designDocPaths": [
     "design-docs/specs/design-behringer-oss-ports.md",
@@ -14,7 +14,7 @@
     "design-docs/user-qa/README.md"
   ],
   "reviewContext": {
-    "issueReference": "workflowInput (no GitHub issue, intake communication comm-011117, workflow execution opus-terra-design-and-implement-review-loop-session-578): 'Port the open-source synth/effect code bundled with Behringer KICK/IGNITE to Rust (batch 1: crates, TinySoundFont, pitch tools, Airwindows A..DitherMeDiskers)', dated 2026-10-31",
+    "issueReference": "workflowInput (no GitHub issue; original intake communication comm-011117, workflow execution opus-terra-design-and-implement-review-loop-session-578; rerun checkpoint input comm-012025 from step5-impl-plan-review, workflow execution opus-terra-design-and-implement-review-loop-session-622): 'Port the open-source synth/effect code bundled with Behringer KICK/IGNITE to Rust (batch 1: crates, TinySoundFont, pitch tools, Airwindows A..DitherMeDiskers)', dated 2026-10-31",
     "userProblem": "The user wants Rust ports of the permissively licensed DSP components bundled in the Behringer KICK (0700-AAM) and IGNITE (0716-AAF) open firmware (Airwindows, TinySoundFont tsf.h/tml.h, smbPitchShift, stftPitchShift, dywapitchtrack) in the host-agnostic music-things workspace. The ports must come from the original upstream sources, never from Music Tribe AGPL code, and must have automated parity evidence against the upstream C/C++. This run is batch 1 of 3.",
     "requiredOutcomes": [
       "crates/airwindows (music-things-airwindows) implements the frozen framework (AirwindowsEffect trait, ParamInfo/PluginInfo, seeded fpd dither, AwRand, display helpers, create/create_with_seed/catalog) and all 110 batch-1 plugins (kick-airwindows-set.txt lines 1-110, Acceleration..DitherMeDiskers). Each plugin has metadata, factory registration and a parity test against committed harness fixtures.",
@@ -78,6 +78,11 @@
       "S5-L1 (low, bop-17c): PitchTracker::new returns InvalidValue when hop > window, which D8 does not list. It applies only to the D3 streaming API; the implementer notes it in the module's D3/D8 docs.",
       "S5-L2 (low, bop-01): the airwindows byte budget is tight (the .f32 files alone are 1,330,560 of 1,600,000 bytes). An overrun is escalated, not solved by raising the threshold.",
       "S5-L3 (low, bop-16c): stale risk text only; design lines 252-255 and bop-16c agree that note-off scans are unguarded. No action needed."
+    ],
+    "priorReviewFindings": [
+      "RW5-2 (high, bop-04): BigAmp was an unregistered scaffold and parity_batch1_g03::bigamp failed with 'plugin missing'. At checkpoint HEAD 49052ec, BigAmp is the directory module crates/airwindows/src/plugins/batch1/g03/bigamp (mod.rs, cabinet.rs) and is registered in g03/mod.rs. bop-04 must re-prove the fix with parity_batch1_g03 (testsRun 8, failures 0).",
+      "RW5-3 (high, bop-15): Ditherbox was missing from g14 and the six g14 ParityRecord maxima were outstanding. At HEAD 49052ec, crates/airwindows/src/plugins/batch1/g14/ditherbox.rs exists and is registered. bop-15 must re-prove the fix with parity_batch1_g14 (testsRun 6, failures 0) and record measured max-abs values for all six plugins.",
+      "RW5-1 (mid, bop-03/04/05/06/09/14): reset() reverted caller-set params to defaults in g02 Average/AverMatrix/Balanced, g03 BassDrive..Biquad2, g04 BiquadDouble/OneHalf/Plus/Triple, all 8 g05 plugins (BrassRider zeroed params), g08 ChromeOxide/Cider/Coils/Coils2/Cojones and g13 Density/Density2/DeRez/DeRez2. At HEAD 49052ec, 73 batch-1 plugin files save and restore params around Self::new, and BrassRider no longer zeroes params. Each owning plan must prove reset preserves params with a set_param -> reset -> get_param probe and confirm that reset still re-renders bit-identically."
     ],
     "sourcePaths": [
       "design-docs/specs/design-behringer-oss-ports.md",
