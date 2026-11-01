@@ -5,3 +5,22 @@ version = 4
 [[package]]
 name = "music-things"
 version = "0.1.0"
+
+[[package]]
+name = "music-things-dsp"
+version = "0.1.0"
+
+[[package]]
+name = "music-things-fx"
+version = "0.1.0"
+dependencies = [
+ "music-things-dsp",
+ "music-things-synth",
+]
+
+[[package]]
+name = "music-things-synth"
+version = "0.1.0"
+dependencies = [
+ "music-things-dsp",
+]
