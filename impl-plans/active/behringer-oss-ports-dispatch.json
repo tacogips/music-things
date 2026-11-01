@@ -4,7 +4,7 @@
   "implementationBranch": "wf/behringer-oss-ports",
   "baseBranch": "wf/behringer-oss-ports",
   "remote": "origin",
-  "originalHead": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+  "originalHead": "72c235e912699c3570ccfb506cef2f06b2ce8b2d",
   "evidenceRoot": "tmp/behringer-oss-ports",
   "designDocPaths": [
     "design-docs/specs/design-behringer-oss-ports.md",
@@ -14,7 +14,7 @@
     "design-docs/user-qa/README.md"
   ],
   "reviewContext": {
-    "issueReference": "workflowInput (no GitHub issue; original intake communication comm-011117, workflow execution opus-terra-design-and-implement-review-loop-session-578; rerun checkpoint input comm-012025 from step5-impl-plan-review, workflow execution opus-terra-design-and-implement-review-loop-session-622): 'Port the open-source synth/effect code bundled with Behringer KICK/IGNITE to Rust (batch 1: crates, TinySoundFont, pitch tools, Airwindows A..DitherMeDiskers)', dated 2026-10-31",
+    "issueReference": "workflowInput (no GitHub issue; original intake communication comm-011117, workflow execution opus-terra-design-and-implement-review-loop-session-578; rerun checkpoint inputs comm-012025 (session-622) and comm-012059 from step5-impl-plan-review, workflow execution opus-terra-design-and-implement-review-loop-session-624):'Port the open-source synth/effect code bundled with Behringer KICK/IGNITE to Rust (batch 1: crates, TinySoundFont, pitch tools, Airwindows A..DitherMeDiskers)', dated 2026-10-31",
     "userProblem": "The user wants Rust ports of the permissively licensed DSP components bundled in the Behringer KICK (0700-AAM) and IGNITE (0716-AAF) open firmware (Airwindows, TinySoundFont tsf.h/tml.h, smbPitchShift, stftPitchShift, dywapitchtrack) in the host-agnostic music-things workspace. The ports must come from the original upstream sources, never from Music Tribe AGPL code, and must have automated parity evidence against the upstream C/C++. This run is batch 1 of 3.",
     "requiredOutcomes": [
       "crates/airwindows (music-things-airwindows) implements the frozen framework (AirwindowsEffect trait, ParamInfo/PluginInfo, seeded fpd dither, AwRand, display helpers, create/create_with_seed/catalog) and all 110 batch-1 plugins (kick-airwindows-set.txt lines 1-110, Acceleration..DitherMeDiskers). Each plugin has metadata, factory registration and a parity test against committed harness fixtures.",
@@ -239,83 +239,123 @@
   "acceptedDependencies": [
     {
       "planId": "bop-00",
-      "planPath": "impl-plans/active/behringer-oss-ports-00-scaffold.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-00-scaffold.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Crate scaffolds music-things-airwindows, music-things-soundfont and music-things-pitch, plus their Cargo.lock entries"
     },
     {
       "planId": "bop-01",
-      "planPath": "impl-plans/active/behringer-oss-ports-01-airwindows-framework.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-01-airwindows-framework.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Frozen airwindows framework (AirwindowsEffect, ParamInfo/PluginInfo, seeded fpd dither, AwRand, display helpers, create/create_with_seed/catalog), the plugins/batch1 registration chain, tools/ reference harnesses and all batch-1 fixtures"
     },
     {
       "planId": "bop-02",
-      "planPath": "impl-plans/active/behringer-oss-ports-02-aw-b1-g01.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-02-aw-b1-g01.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g01 plugins, registered in g01/mod.rs, with parity_batch1_g01"
     },
     {
       "planId": "bop-03",
-      "planPath": "impl-plans/active/behringer-oss-ports-03-aw-b1-g02.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-03-aw-b1-g02.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g02 plugins, registered in g02/mod.rs, with parity_batch1_g02"
     },
     {
       "planId": "bop-05",
-      "planPath": "impl-plans/active/behringer-oss-ports-05-aw-b1-g04.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-05-aw-b1-g04.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g04 plugins, registered in g04/mod.rs, with parity_batch1_g04"
     },
     {
       "planId": "bop-06",
-      "planPath": "impl-plans/active/behringer-oss-ports-06-aw-b1-g05.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-06-aw-b1-g05.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g05 plugins, registered in g05/mod.rs, with parity_batch1_g05"
     },
     {
       "planId": "bop-07",
-      "planPath": "impl-plans/active/behringer-oss-ports-07-aw-b1-g06.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-07-aw-b1-g06.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g06 plugins, registered in g06/mod.rs, with parity_batch1_g06"
     },
     {
       "planId": "bop-08",
-      "planPath": "impl-plans/active/behringer-oss-ports-08-aw-b1-g07.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-08-aw-b1-g07.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g07 plugins, registered in g07/mod.rs, with parity_batch1_g07"
     },
     {
       "planId": "bop-09",
-      "planPath": "impl-plans/active/behringer-oss-ports-09-aw-b1-g08.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-09-aw-b1-g08.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g08 plugins, registered in g08/mod.rs, with parity_batch1_g08"
     },
     {
       "planId": "bop-10",
-      "planPath": "impl-plans/active/behringer-oss-ports-10-aw-b1-g09.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-10-aw-b1-g09.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g09 plugins, registered in g09/mod.rs, with parity_batch1_g09"
     },
     {
       "planId": "bop-11",
-      "planPath": "impl-plans/active/behringer-oss-ports-11-aw-b1-g10.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-11-aw-b1-g10.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g10 plugins, registered in g10/mod.rs, with parity_batch1_g10"
     },
     {
       "planId": "bop-12",
-      "planPath": "impl-plans/active/behringer-oss-ports-12-aw-b1-g11.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-12-aw-b1-g11.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g11 plugins, registered in g11/mod.rs, with parity_batch1_g11"
     },
     {
       "planId": "bop-13",
-      "planPath": "impl-plans/active/behringer-oss-ports-13-aw-b1-g12.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-13-aw-b1-g12.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g12 plugins, registered in g12/mod.rs, with parity_batch1_g12"
     },
     {
       "planId": "bop-14",
-      "planPath": "impl-plans/active/behringer-oss-ports-14-aw-b1-g13.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-14-aw-b1-g13.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g13 plugins, registered in g13/mod.rs, with parity_batch1_g13"
     },
     {
       "planId": "bop-16a",
-      "planPath": "impl-plans/active/behringer-oss-ports-16a-soundfont-midi.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-16a-soundfont-midi.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-soundfont midi module (tml.h port: midi::parse, info, tempo_value) with parity tests"
     },
     {
       "planId": "bop-16b",
-      "planPath": "impl-plans/active/behringer-oss-ports-16b-soundfont-font.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-16b-soundfont-font.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-soundfont font module (tsf.h SF2 loader; Region/Preset/Envelope contract for synth) with parity tests"
     },
     {
       "planId": "bop-16c",
-      "planPath": "impl-plans/active/behringer-oss-ports-16c-soundfont-synth.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-16c-soundfont-synth.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-soundfont synth module (tsf.h voices, envelopes, LFOs, filters, rendering, tsf_channel_* API) with parity tests"
     },
     {
       "planId": "bop-17a",
-      "planPath": "impl-plans/active/behringer-oss-ports-17a-pitch-smb.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-17a-pitch-smb.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-pitch SmbPitchShifter (smbPitchShift port) with parity tests"
     },
     {
       "planId": "bop-17b",
-      "planPath": "impl-plans/active/behringer-oss-ports-17b-pitch-stft.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-17b-pitch-stft.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-pitch StftPitchShift, StftPitchShiftStream and the RFFT port with parity tests"
     },
     {
       "planId": "bop-17c",
-      "planPath": "impl-plans/active/behringer-oss-ports-17c-pitch-dywa.md"
+      "planPath": "impl-plans/active/behringer-oss-ports-17c-pitch-dywa.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-pitch PitchTracker (dywapitchtrack port) with parity tests"
     }
   ],
   "acceptedDependenciesNote": "Operator amendment 2026-11-01: these plans were accepted by session 578 (waves 1-6; formal test-integrity, adversarial and integration reviews) and committed at 49052ec. A plan-checkpoint rerun does not carry session acceptance, so they are declared here as committed dependencies instead of being re-dispatched. bop-04 (BigAmp) and bop-15 (Ditherbox) were completed by direct gpt-6.1-terra passes at 49052ec (fixture parity exact, max-abs 0.0) and need only formal re-verification and reviews; bop-18 runs the batch-1 integration gates."
