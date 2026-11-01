@@ -1,11 +1,12 @@
 {
   "taskId": "airwindows-batch2",
   "workflowMode": "issue-resolution",
-  "workflowExecutionId": "opus-terra-design-and-implement-review-loop-session-627",
+  "workflowExecutionId": "opus-terra-design-and-implement-review-loop-session-629",
   "implementationBranch": "wf/airwindows-batch2",
   "baseBranch": "wf/airwindows-batch2",
   "remote": "origin",
-  "originalHead": "d1199ca4416c2aefe25f5fb80930893ffa843b97",
+  "originalHead": "1809d5b7fb9adca96de5bc4e2c7d63b034649533",
+  "preBatchBase": "d1199ca4416c2aefe25f5fb80930893ffa843b97",
   "evidenceRoot": "tmp/airwindows-batch2",
   "designDocPaths": [
     "design-docs/specs/design-airwindows-batch2.md",
@@ -48,7 +49,7 @@
     "impl-plans/active/airwindows-batch2-99-integration.md"
   ],
   "reviewContext": {
-    "issueReference": "workflowInput issue 'Port Airwindows batch 2 (110 plugins, DitherMeTimbers .. Pop2) into music-things-airwindows' (no GitHub number); workflowExecutionId opus-terra-design-and-implement-review-loop-session-627; intake comm-012127; design accepted at comm-012129; plans accepted at comm-012133 (step5-impl-plan-review, reviewDecision accept, S5-M1 resolved)",
+    "issueReference": "workflowInput issue 'Port Airwindows batch 2 (110 plugins, DitherMeTimbers .. Pop2) into music-things-airwindows' (no GitHub number); continuation workflowExecutionId opus-terra-design-and-implement-review-loop-session-629 (plans re-accepted at comm-012154, step5-impl-plan-review, reviewDecision accept; step4 comm-012153); originally designed in session-627 (intake comm-012127, design accepted comm-012129, plans accepted comm-012133, S5-M1 resolved); design and plans committed at 2651f17 and 1809d5b",
     "userProblem": "music-things-airwindows holds the Airwindows framework and batch 1 (110 plugins, merged at d1199ca). The next 110 plugins of the Behringer KICK/IGNITE bundled Airwindows set (kick-airwindows-set.txt lines 111-220, DitherMeTimbers .. Pop2) are not ported yet. In batch 1 the largest plugins were skipped or stubbed in two consecutive waves (BigAmp left as an unregistered stub, Ditherbox never written).",
     "requiredOutcomes": [
       "All 110 plugins on kick-airwindows-set.txt lines 111-220 are ported, registered in batch2 GROUPS (34 groups in kick order) and listed by catalog(); tests/catalog_batch2.rs asserts the exact ordered 110-name slice after DitherMeDiskers.",
