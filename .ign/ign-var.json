@@ -1,0 +1,14 @@
+{
+  "variables": {
+    "AUTHOR_EMAIL": "",
+    "AUTHOR_NAME": "",
+    "DESCRIPTION": "Reusable Rust synth and effect DSP crates",
+    "EDITION": 2021,
+    "HAS_AUTHOR": false,
+    "HOMEPAGE": "https://github.com/tacogips/music-things",
+    "PROJECT_NAME": "music-things",
+    "REPOSITORY": "https://github.com/tacogips/music-things",
+    "RUST_VERSION": "1.83.0",
+    "VERSION": "0.1.0"
+  }
+}

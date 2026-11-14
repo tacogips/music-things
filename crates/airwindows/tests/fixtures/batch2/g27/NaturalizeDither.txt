@@ -1,0 +1,12 @@
+format=aw-fixture-v1
+name=NaturalizeDither
+upstream=NaturalizeDither
+host=arm64-Darwin
+clang=21.0.0 (clang-2100.1.1.101)
+stimulus_fnv_44100=d83a50634fc97283
+stimulus_fnv_96000=9079f3b5302ec7f0
+seed=00c0ffee
+block=128
+frames=8192
+description=NaturalizeDither is deterministic dither that uses Benford Realness calculations for each sample.
+params=0

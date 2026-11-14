@@ -1,0 +1,362 @@
+{
+  "taskId": "behringer-oss-ports",
+  "workflowMode": "issue-resolution",
+  "implementationBranch": "wf/behringer-oss-ports",
+  "baseBranch": "wf/behringer-oss-ports",
+  "remote": "origin",
+  "originalHead": "72c235e912699c3570ccfb506cef2f06b2ce8b2d",
+  "evidenceRoot": "tmp/behringer-oss-ports",
+  "designDocPaths": [
+    "design-docs/specs/design-behringer-oss-ports.md",
+    "design-docs/specs/architecture.md",
+    "design-docs/references/README.md",
+    "design-docs/user-qa/pending-behringer-oss-ports-batch1.md",
+    "design-docs/user-qa/README.md"
+  ],
+  "reviewContext": {
+    "issueReference": "workflowInput (no GitHub issue; original intake communication comm-011117, workflow execution opus-terra-design-and-implement-review-loop-session-578; rerun checkpoint inputs comm-012025 (session-622) and comm-012059 from step5-impl-plan-review, workflow execution opus-terra-design-and-implement-review-loop-session-624):'Port the open-source synth/effect code bundled with Behringer KICK/IGNITE to Rust (batch 1: crates, TinySoundFont, pitch tools, Airwindows A..DitherMeDiskers)', dated 2026-10-31",
+    "userProblem": "The user wants Rust ports of the permissively licensed DSP components bundled in the Behringer KICK (0700-AAM) and IGNITE (0716-AAF) open firmware (Airwindows, TinySoundFont tsf.h/tml.h, smbPitchShift, stftPitchShift, dywapitchtrack) in the host-agnostic music-things workspace. The ports must come from the original upstream sources, never from Music Tribe AGPL code, and must have automated parity evidence against the upstream C/C++. This run is batch 1 of 3.",
+    "requiredOutcomes": [
+      "crates/airwindows (music-things-airwindows) implements the frozen framework (AirwindowsEffect trait, ParamInfo/PluginInfo, seeded fpd dither, AwRand, display helpers, create/create_with_seed/catalog) and all 110 batch-1 plugins (kick-airwindows-set.txt lines 1-110, Acceleration..DitherMeDiskers). Each plugin has metadata, factory registration and a parity test against committed harness fixtures.",
+      "crates/soundfont (music-things-soundfont) ports tsf.h (font load, synth runtime, every public tsf_channel_* function) and tml.h (midi::parse, info, tempo_value), with parity on synthetic SF2/MIDI files built in test code.",
+      "crates/pitch (music-things-pitch) ports smbPitchShift (SmbPitchShifter), stftPitchShift (StftPitchShift, StftPitchShiftStream, RFFT port) and dywapitchtrack (PitchTracker), with realtime-safe APIs and parity tests.",
+      "The facade crates/music-things gains the optional features airwindows, soundfont and pitch (re-exports only; no default features).",
+      "MIT reference harnesses live under tools/ (written from scratch, including the VST shim) and compile the upstream code in place from $MUSIC_THINGS_REFS. Committed fixtures stay within budget: airwindows <= 1600000 bytes, soundfont <= 400000, pitch <= 600000, total <= 3000000.",
+      "THIRD_PARTY_NOTICES.md and README.md list every component with upstream URL, pinned revision and license text. AGENTS.md Project Structure lists the new crates and tools/.",
+      "Workspace gates pass: cargo nextest run --workspace; cargo build --workspace --target wasm32-unknown-unknown; cargo build -p music-things --all-features --target wasm32-unknown-unknown; cargo clippy --workspace --all-targets -- -D warnings; cargo clippy -p music-things --all-features -- -D warnings; cargo fmt --check."
+    ],
+    "nonGoals": [
+      "No Airwindows plugins beyond the 110 batch-1 plugins, and no stubs for the other 219 (batches 2 and 3 are later runs).",
+      "No processDoubleReplacing, chunks or programs for Airwindows; no tsf_render_short and no file/stream loaders for tsf/tml; no i16 public API for smb; no other FFT than the RFFT.h port; no streaming MIDI parser.",
+      "No edits to the root Cargo.toml, mise.toml, or crates other than crates/airwindows, crates/soundfont, crates/pitch and the facade features in crates/music-things.",
+      "No copying of upstream C/C++ into the repository, and never reading Music Tribe AGPL sources (KICK/IGNITE AudIO, Kick, Source).",
+      "No CI or mise task for fixture regeneration (non-blocking pending default in design-docs/user-qa/pending-behringer-oss-ports-batch1.md)."
+    ],
+    "constraints": [
+      "Port only from the pinned upstream refs under $MUSIC_THINGS_REFS=/Users/taco/gits/tacogips/music-things-refs (airwindows @ b110fac3991fff7c4655cc2d25d6a3e221f9799c, TinySoundFont @ 853a0a171759f1ddba0de1442133a75912bbeffa, stftPitchShift @ 70c96db087458f8631edbc1bb4068d42ea5b52cc, dywapitchtrack 0.1.0.1, smbPitchShift 1.2). Keep upstream copyright and license headers in ported files.",
+      "New crates have no dependencies and no dev-dependencies, are host-agnostic, use an f32 audio API with an explicit sample rate, and build for wasm32-unknown-unknown.",
+      "Allocation happens only in constructors and loaders. process, render, note_on, channel/controller calls and push never allocate; a counting-global-allocator test per component enforces this.",
+      "Every Rust file stays under 1000 lines.",
+      "Each plan edits only its writePaths and formats only owned files with rustfmt --edition 2021. Workspace-wide cargo fmt --check runs only as a gate in bop-18.",
+      "No git checkout, stash or reset, or any other tree-rewriting git operation; sibling plans share the working directory.",
+      "Each plan's evidence goes under tmp/behringer-oss-ports/<planId>/ (intent.md, pre-hashes.txt, post-hashes.txt, logs/). Verification records use {command, exitStatus: 0, testsRun, testsPassed, failureCount: 0, outcome: \"passed\", log, notes}. Negative-control runs go in mutationEvidence.",
+      "Harness compile flags: -O1 -ffp-contract=off -fno-fast-math -fno-builtin. The airwindows harness asserts long double == double.",
+      "Cargo env: CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1."
+    ],
+    "designDecisionsAndRationale": [
+      "Additive Airwindows registration (plugins/mod.rs -> batchN/mod.rs -> batchN/gNN/mod.rs -> one file per plugin), so batches 2 and 3 never edit framework files, and group plans own disjoint directories.",
+      "bop-01 freezes the framework and generates all 220 batch-1 fixture files before any group plan starts, so group plans never edit tools/. Harness defects escalate to bop-01, and the affected plugin is marked BLOCKED.",
+      "Deterministic seeding (D5): fpd_from_seed(seed, lane) with lowbias32, plus the AwRand stream replacing libc rand(). The harness seeds the same stream and overrides fpd after construction.",
+      "Parity classes for Airwindows: Exact (bit-identical), Libm (max-abs <= 1e-6), and Custom(x) only with a written reason. Other tolerances: tml exact; font load ints exact and floats relative 1e-6; tsf render max-abs <= 1e-5; smb <= 3 LSB in the int16 domain; stft offline <= 1e-5 and stream vs offline <= 1e-6; dywa relative 1e-9 with identical pitch/no-pitch decisions.",
+      "A shared deterministic stimulus (C in tools/common/stimulus.h, Rust twins in tests/common/) uses basic IEEE ops only, and its FNV-1a-64 checksum is asserted in every parity test to catch generator drift.",
+      "SoundFont is split into midi/, font/ and synth/ modules owned by bop-16a, bop-16b and bop-16c. The internal Region, Preset and Envelope structs mirror tsf field for field as the 16b->16c contract.",
+      "Plan DAG has 4 waves: W1 bop-00; W2 bop-01, bop-16a, bop-16b, bop-17a, bop-17b, bop-17c; W3 bop-02..bop-15 and bop-16c; W4 bop-18. Cargo.lock is written only by bop-00 and bop-18. Files that change owner across waves (airwindows gNN/mod.rs and fixtures/batch1/gNN) are ordered by dependencies.",
+      "Fixture budgets are measured in apparent bytes (the sum of file lengths, matching the fixture_budget tests), not du block counts."
+    ],
+    "intentionalTradeoffs": [
+      "D1: display strings follow a clean-room float2string/dB2string/int2string spec shared by the MIT shim and Rust. Character-exact Steinberg SDK formatting is not claimed.",
+      "D2: StftPitchShiftStream has no upstream counterpart and is verified only against the ported offline path.",
+      "D3: dywapitchtrack takes an explicit sample rate and is identical to upstream at 44100 Hz.",
+      "D4: tsf channels are capped at 16 with preallocated storage (lazy activation below the cap mirrors tsf), and the voice pool is fixed at construction.",
+      "D6: no processDoubleReplacing, chunks or programs; reset() is added.",
+      "D7: smbPitchShift uses f32 I/O and omits both int16 conversions. Parity is proven through the int16 bridge.",
+      "D8: constructors return ConfigError for configurations where upstream has undefined behavior (smb frame/osamp, stft hopsize 0, dywa window/hop).",
+      "Tolerances are measured only on aarch64-apple-darwin, and a bound is widened only by a documented design update."
+    ],
+    "supportedEdgeCases": [
+      "Airwindows: an unknown plugin name gives None; lookup by upstream_name works (Console8BusOut -> Console8BussOut); set_param clamps to [0,1] and ignores NaN and out-of-range indices; process handles the min of the four slice lengths; reset re-renders bit-identically; plugins without fpdL/fpdR are detected at compile time in the harness.",
+      "SoundFont: truncated SF2 and MIDI inputs return Err; a sample rate of 0 becomes 44100 as upstream; voice exhaustion under max_voices; channel index >= 16 is a no-op that returns the failure value; lazy channel activation, inactive-channel getter fallbacks, unguarded note_off/note_off_all/sounds_off_all voice scans, and reset deactivation; mixing vs overwrite render.",
+      "Pitch: invalid smb frame size/osamp, stft framesize 1 or not a power of two, analysis < synthesis, hopsize 0, empty or too many factors, dywa non-power-of-two window or hop 0 (and hop > window, a D3 streaming-API check noted in residual finding S5-L1); smb chunk-size invariance; stft asymmetric frames (C3) and a non-divisor hop accepted when upstream accepts it; dywa push sequence equals compute sequence."
+    ],
+    "outOfScopeEdgeCases": [
+      "Cross-host libm calibration (glibc, wasm libm) beyond the stated bounds; only aarch64-apple-darwin is the acceptance host.",
+      "Copyrighted SoundFonts and real-world MIDI files; tests use synthetic inputs only.",
+      "Batch-2 and batch-3 Airwindows plugins (kick list line 111 onward, starting with DitherMeTimbers).",
+      "Automated fixture regeneration in CI."
+    ],
+    "residualFindings": [
+      "S5-L1 (low, bop-17c): PitchTracker::new returns InvalidValue when hop > window, which D8 does not list. It applies only to the D3 streaming API; the implementer notes it in the module's D3/D8 docs.",
+      "S5-L2 (low, bop-01): the airwindows byte budget is tight (the .f32 files alone are 1,330,560 of 1,600,000 bytes). An overrun is escalated, not solved by raising the threshold.",
+      "S5-L3 (low, bop-16c): stale risk text only; design lines 252-255 and bop-16c agree that note-off scans are unguarded. No action needed."
+    ],
+    "priorReviewFindings": [
+      "RW5-2 (high, bop-04): BigAmp was an unregistered scaffold and parity_batch1_g03::bigamp failed with 'plugin missing'. At checkpoint HEAD 49052ec, BigAmp is the directory module crates/airwindows/src/plugins/batch1/g03/bigamp (mod.rs, cabinet.rs) and is registered in g03/mod.rs. bop-04 must re-prove the fix with parity_batch1_g03 (testsRun 8, failures 0).",
+      "RW5-3 (high, bop-15): Ditherbox was missing from g14 and the six g14 ParityRecord maxima were outstanding. At HEAD 49052ec, crates/airwindows/src/plugins/batch1/g14/ditherbox.rs exists and is registered. bop-15 must re-prove the fix with parity_batch1_g14 (testsRun 6, failures 0) and record measured max-abs values for all six plugins.",
+      "RW5-1 (mid, bop-03/04/05/06/09/14): reset() reverted caller-set params to defaults in g02 Average/AverMatrix/Balanced, g03 BassDrive..Biquad2, g04 BiquadDouble/OneHalf/Plus/Triple, all 8 g05 plugins (BrassRider zeroed params), g08 ChromeOxide/Cider/Coils/Coils2/Cojones and g13 Density/Density2/DeRez/DeRez2. At HEAD 49052ec, 73 batch-1 plugin files save and restore params around Self::new, and BrassRider no longer zeroes params. Each owning plan must prove reset preserves params with a set_param -> reset -> get_param probe and confirm that reset still re-renders bit-identically."
+    ],
+    "sourcePaths": [
+      "design-docs/specs/design-behringer-oss-ports.md",
+      "design-docs/specs/architecture.md",
+      "design-docs/references/README.md",
+      "design-docs/user-qa/pending-behringer-oss-ports-batch1.md",
+      "impl-plans/README.md",
+      "AGENTS.md",
+      "Cargo.toml",
+      "Cargo.lock",
+      "crates/music-things/Cargo.toml",
+      "crates/music-things/src/lib.rs",
+      "THIRD_PARTY_NOTICES.md",
+      "README.md",
+      "mise.toml"
+    ]
+  },
+  "plans": [
+    {
+      "planId": "bop-04",
+      "planPath": "impl-plans/active/behringer-oss-ports-04-aw-b1-g03.md",
+      "dependsOn": [
+        "bop-01"
+      ],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch1/g03",
+        "crates/airwindows/tests/parity_batch1_g03.rs",
+        "crates/airwindows/tests/fixtures/batch1/g03",
+        "impl-plans/active/behringer-oss-ports-04-aw-b1-g03.md",
+        "target",
+        "tmp/behringer-oss-ports/bop-04"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": [
+        "target",
+        "tmp/behringer-oss-ports/bop-04"
+      ],
+      "acceptanceCriteria": [
+        "All 8 plugins of kick-list lines 17-24 are ported, registered in g03/mod.rs in line order and tested (or marked BLOCKED with evidence after harness-defect escalation to bop-01).",
+        "Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.",
+        "Verifications 1-6 exit 0 (parity_batch1_g03 testsRun = 8, failures = 0) with logs in tmp/behringer-oss-ports/bop-04/logs/.",
+        "Only writePaths are modified; Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test parity_batch1_g03",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test catalog --test no_alloc",
+        "CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings",
+        "find crates/airwindows/src/plugins/batch1/g03 crates/airwindows/tests/parity_batch1_g03.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "CARGO_TERM_QUIET=true cargo build -p music-things-airwindows --target wasm32-unknown-unknown",
+        "test -z \"$(find crates/airwindows/src/plugins/batch1/g03 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\""
+      ]
+    },
+    {
+      "planId": "bop-15",
+      "planPath": "impl-plans/active/behringer-oss-ports-15-aw-b1-g14.md",
+      "dependsOn": [
+        "bop-01"
+      ],
+      "writePaths": [
+        "crates/airwindows/src/plugins/batch1/g14",
+        "crates/airwindows/tests/parity_batch1_g14.rs",
+        "crates/airwindows/tests/fixtures/batch1/g14",
+        "impl-plans/active/behringer-oss-ports-15-aw-b1-g14.md",
+        "target",
+        "tmp/behringer-oss-ports/bop-15"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": [
+        "target",
+        "tmp/behringer-oss-ports/bop-15"
+      ],
+      "acceptanceCriteria": [
+        "All 6 plugins of kick-list lines 105-110 (ending at DitherMeDiskers; DitherMeTimbers on line 111 is batch 2 and is not ported) are ported, registered in g14/mod.rs in line order and tested (or marked BLOCKED with evidence after harness-defect escalation to bop-01).",
+        "Every plugin has a ParityRecord with its class and measured max-abs, repeated in the module header.",
+        "Verifications 1-6 exit 0 (parity_batch1_g14 testsRun = 6, failures = 0) with logs in tmp/behringer-oss-ports/bop-15/logs/.",
+        "Only writePaths are modified; Progress Log records the plugin list, classes, max-abs values, commands, exit status and log paths."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test parity_batch1_g14",
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run -p music-things-airwindows --test catalog --test no_alloc",
+        "CARGO_TERM_QUIET=true cargo clippy -p music-things-airwindows --all-targets -- -D warnings",
+        "find crates/airwindows/src/plugins/batch1/g14 crates/airwindows/tests/parity_batch1_g14.rs -name '*.rs' -print0 | xargs -0 rustfmt --edition 2021 --check",
+        "CARGO_TERM_QUIET=true cargo build -p music-things-airwindows --target wasm32-unknown-unknown",
+        "test -z \"$(find crates/airwindows/src/plugins/batch1/g14 -name '*.rs' -exec wc -l {} + | awk '$2 != \"total\" && $1 >= 1000')\""
+      ]
+    },
+    {
+      "planId": "bop-18",
+      "planPath": "impl-plans/active/behringer-oss-ports-18-integration.md",
+      "dependsOn": [
+        "bop-00",
+        "bop-01",
+        "bop-02",
+        "bop-03",
+        "bop-04",
+        "bop-05",
+        "bop-06",
+        "bop-07",
+        "bop-08",
+        "bop-09",
+        "bop-10",
+        "bop-11",
+        "bop-12",
+        "bop-13",
+        "bop-14",
+        "bop-15",
+        "bop-16a",
+        "bop-16b",
+        "bop-16c",
+        "bop-17a",
+        "bop-17b",
+        "bop-17c"
+      ],
+      "writePaths": [
+        "crates/music-things/Cargo.toml",
+        "crates/music-things/src/lib.rs",
+        "Cargo.lock",
+        "crates/airwindows/tests/batch1_complete.rs",
+        "THIRD_PARTY_NOTICES.md",
+        "README.md",
+        "AGENTS.md",
+        "impl-plans/active/behringer-oss-ports-18-integration.md",
+        "target",
+        "tmp/behringer-oss-ports/bop-18"
+      ],
+      "sharedPaths": [],
+      "artifactRoots": [
+        "target",
+        "tmp/behringer-oss-ports/bop-18"
+      ],
+      "acceptanceCriteria": [
+        "Facade crates/music-things gains optional features airwindows, soundfont and pitch (dep: syntax, no default features) and cfg-gated re-exports only; builds with no features and with --all-features, including wasm32.",
+        "crates/airwindows/tests/batch1_complete.rs asserts the catalog equals the 110 kick-list names in order (hard-coded from the pinned list), the Console8BusOut -> Console8BussOut mapping, and that create succeeds for all 110.",
+        "THIRD_PARTY_NOTICES.md has one section per component (Airwindows with the 110 names, tsf.h, tml.h, stftPitchShift, dywapitchtrack, smbPitchShift WOL) with URL, pinned revision, ported files and full license text; README.md has the crates table, facade feature usage, parity/fixtures note and notices pointer; AGENTS.md changes only in its Project Structure section.",
+        "Verifications 1-9 pass (full workspace gates, fixture byte budgets 1600000/400000/600000/3000000, no Rust file at 1000+ lines, root Cargo.toml untouched) with logs in tmp/behringer-oss-ports/bop-18/logs/; failures in other plans' files are listed as findings with the owning plan ID.",
+        "Only writePaths are modified; Progress Log updated with commands, exit status, tests run/passed and log paths."
+      ],
+      "verification": [
+        "CARGO_TERM_QUIET=true NEXTEST_STATUS_LEVEL=fail NEXTEST_FAILURE_OUTPUT=immediate-final NEXTEST_HIDE_PROGRESS_BAR=1 cargo nextest run --workspace",
+        "CARGO_TERM_QUIET=true cargo build --workspace --target wasm32-unknown-unknown",
+        "CARGO_TERM_QUIET=true cargo build -p music-things --all-features --target wasm32-unknown-unknown",
+        "CARGO_TERM_QUIET=true cargo clippy --workspace --all-targets -- -D warnings",
+        "CARGO_TERM_QUIET=true cargo clippy -p music-things --all-features -- -D warnings",
+        "CARGO_TERM_QUIET=true cargo fmt --check",
+        "test \"$(find crates/airwindows/tests/fixtures -type f -exec stat -f %z {} + | awk '{s+=$1} END {print s+0}')\" -le 1600000",
+        "test \"$(find crates/soundfont/tests/fixtures -type f -exec stat -f %z {} + | awk '{s+=$1} END {print s+0}')\" -le 400000",
+        "test \"$(find crates/pitch/tests/fixtures -type f -exec stat -f %z {} + | awk '{s+=$1} END {print s+0}')\" -le 600000",
+        "test \"$(find crates/airwindows/tests/fixtures crates/soundfont/tests/fixtures crates/pitch/tests/fixtures -type f -exec stat -f %z {} + | awk '{s+=$1} END {print s+0}')\" -le 3000000",
+        "test -z \"$(find crates -name '*.rs' -exec wc -l {} + | awk '$1 >= 1000 && $2 != \"total\"')\"",
+        "git diff --quiet Cargo.toml"
+      ]
+    }
+  ],
+  "acceptedDependencies": [
+    {
+      "planId": "bop-00",
+      "planPath": "impl-plans/active/behringer-oss-ports-00-scaffold.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Crate scaffolds music-things-airwindows, music-things-soundfont and music-things-pitch, plus their Cargo.lock entries"
+    },
+    {
+      "planId": "bop-01",
+      "planPath": "impl-plans/active/behringer-oss-ports-01-airwindows-framework.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Frozen airwindows framework (AirwindowsEffect, ParamInfo/PluginInfo, seeded fpd dither, AwRand, display helpers, create/create_with_seed/catalog), the plugins/batch1 registration chain, tools/ reference harnesses and all batch-1 fixtures"
+    },
+    {
+      "planId": "bop-02",
+      "planPath": "impl-plans/active/behringer-oss-ports-02-aw-b1-g01.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g01 plugins, registered in g01/mod.rs, with parity_batch1_g01"
+    },
+    {
+      "planId": "bop-03",
+      "planPath": "impl-plans/active/behringer-oss-ports-03-aw-b1-g02.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g02 plugins, registered in g02/mod.rs, with parity_batch1_g02"
+    },
+    {
+      "planId": "bop-05",
+      "planPath": "impl-plans/active/behringer-oss-ports-05-aw-b1-g04.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g04 plugins, registered in g04/mod.rs, with parity_batch1_g04"
+    },
+    {
+      "planId": "bop-06",
+      "planPath": "impl-plans/active/behringer-oss-ports-06-aw-b1-g05.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g05 plugins, registered in g05/mod.rs, with parity_batch1_g05"
+    },
+    {
+      "planId": "bop-07",
+      "planPath": "impl-plans/active/behringer-oss-ports-07-aw-b1-g06.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g06 plugins, registered in g06/mod.rs, with parity_batch1_g06"
+    },
+    {
+      "planId": "bop-08",
+      "planPath": "impl-plans/active/behringer-oss-ports-08-aw-b1-g07.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g07 plugins, registered in g07/mod.rs, with parity_batch1_g07"
+    },
+    {
+      "planId": "bop-09",
+      "planPath": "impl-plans/active/behringer-oss-ports-09-aw-b1-g08.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g08 plugins, registered in g08/mod.rs, with parity_batch1_g08"
+    },
+    {
+      "planId": "bop-10",
+      "planPath": "impl-plans/active/behringer-oss-ports-10-aw-b1-g09.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g09 plugins, registered in g09/mod.rs, with parity_batch1_g09"
+    },
+    {
+      "planId": "bop-11",
+      "planPath": "impl-plans/active/behringer-oss-ports-11-aw-b1-g10.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g10 plugins, registered in g10/mod.rs, with parity_batch1_g10"
+    },
+    {
+      "planId": "bop-12",
+      "planPath": "impl-plans/active/behringer-oss-ports-12-aw-b1-g11.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g11 plugins, registered in g11/mod.rs, with parity_batch1_g11"
+    },
+    {
+      "planId": "bop-13",
+      "planPath": "impl-plans/active/behringer-oss-ports-13-aw-b1-g12.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g12 plugins, registered in g12/mod.rs, with parity_batch1_g12"
+    },
+    {
+      "planId": "bop-14",
+      "planPath": "impl-plans/active/behringer-oss-ports-14-aw-b1-g13.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "Airwindows batch-1 group g13 plugins, registered in g13/mod.rs, with parity_batch1_g13"
+    },
+    {
+      "planId": "bop-16a",
+      "planPath": "impl-plans/active/behringer-oss-ports-16a-soundfont-midi.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-soundfont midi module (tml.h port: midi::parse, info, tempo_value) with parity tests"
+    },
+    {
+      "planId": "bop-16b",
+      "planPath": "impl-plans/active/behringer-oss-ports-16b-soundfont-font.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-soundfont font module (tsf.h SF2 loader; Region/Preset/Envelope contract for synth) with parity tests"
+    },
+    {
+      "planId": "bop-16c",
+      "planPath": "impl-plans/active/behringer-oss-ports-16c-soundfont-synth.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-soundfont synth module (tsf.h voices, envelopes, LFOs, filters, rendering, tsf_channel_* API) with parity tests"
+    },
+    {
+      "planId": "bop-17a",
+      "planPath": "impl-plans/active/behringer-oss-ports-17a-pitch-smb.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-pitch SmbPitchShifter (smbPitchShift port) with parity tests"
+    },
+    {
+      "planId": "bop-17b",
+      "planPath": "impl-plans/active/behringer-oss-ports-17b-pitch-stft.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-pitch StftPitchShift, StftPitchShiftStream and the RFFT port with parity tests"
+    },
+    {
+      "planId": "bop-17c",
+      "planPath": "impl-plans/active/behringer-oss-ports-17c-pitch-dywa.md",
+      "commit": "49052ec15329b3972ecfa2ea512767e8ca02a167",
+      "provides": "music-things-pitch PitchTracker (dywapitchtrack port) with parity tests"
+    }
+  ],
+  "acceptedDependenciesNote": "Operator amendment 2026-11-01: these plans were accepted by session 578 (waves 1-6; formal test-integrity, adversarial and integration reviews) and committed at 49052ec. A plan-checkpoint rerun does not carry session acceptance, so they are declared here as committed dependencies instead of being re-dispatched. bop-04 (BigAmp) and bop-15 (Ditherbox) were completed by direct gpt-6.1-terra passes at 49052ec (fixture parity exact, max-abs 0.0) and need only formal re-verification and reviews; bop-18 runs the batch-1 integration gates."
+}
