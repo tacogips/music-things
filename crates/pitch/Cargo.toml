@@ -1,0 +1,15 @@
+[package]
+name = "music-things-pitch"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.83"
+description = "Pitch shifting and pitch tracking"
+license = "MIT"
+homepage = "https://github.com/tacogips/music-things"
+repository = "https://github.com/tacogips/music-things"
+readme = "../../README.md"
+
+[dependencies]
+
+[lib]
+path = "src/lib.rs"

@@ -1,0 +1,24 @@
+[package]
+name = "music-things"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.83"
+description = "Facade crate re-exporting the music-things synth and effect DSP crates"
+license = "MIT"
+homepage = "https://github.com/tacogips/music-things"
+repository = "https://github.com/tacogips/music-things"
+readme = "../../README.md"
+
+[dependencies]
+music-things-airwindows = { path = "../airwindows", version = "0.1.0", optional = true }
+music-things-soundfont = { path = "../soundfont", version = "0.1.0", optional = true }
+music-things-pitch = { path = "../pitch", version = "0.1.0", optional = true }
+
+[features]
+default = []
+airwindows = ["dep:music-things-airwindows"]
+soundfont = ["dep:music-things-soundfont"]
+pitch = ["dep:music-things-pitch"]
+
+[lib]
+path = "src/lib.rs"
