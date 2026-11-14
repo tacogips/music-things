@@ -1,0 +1,8 @@
+pitch_fnv=4ed50bb4be37bb1a
+Apple clang version 21.0.0 (clang-2100.1.1.101)
+Darwin arm64
+upstream=70c96db087458f8631edbc1bb4068d42ea5b52cc
+c1=1024/1024 hop=256 factors=1.5 quefrency=0.001 distortion=1 normalization=off
+c2=1024/1024 hop=256 factors=0.75,1.25 quefrency=0 distortion=1 normalization=on
+c3=1024/512 hop=128 factors=1.25 quefrency=0 distortion=1 normalization=off
+samples=11025 sample_rate=44100 format=f32le
